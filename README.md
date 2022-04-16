@@ -26,7 +26,7 @@ This will also require the machine you run packer to be able to recieve connecti
 
 Using the provided packer config files it will build templates within Proxmox that can be used with cloud-init to clone and setup username, password, ssh keys and network information.
 
-Rename (or edit if you aren't commiting to source control) packer/sample.credentials.pkr.hcl. Update the variables as needed, this will require having an API token. If you do not want to give this token/user full access it needs the following permissions:
+Rename (or edit if you aren't commiting to source control) packer/credentials.pkr.hcl.sample. Update the variables as needed, this will require having an API token. If you do not want to give this token/user full access it needs the following permissions:
 * VM.Config.HWType
 * VM.Config.CDROM
 * VM.Monitor
@@ -53,7 +53,7 @@ With the packer installed and credentials file updated from either (or both) of 
 ### Terraform
 Install terraform from Hashicorp directions https://www.terraform.io/downloads
 
-Rename (or edit if you aren't commiting to source control) terraform/sample.credentials.auto.tfvars. Update the variables as needed, this will require having an API token. The API token need similar permissions to the packer token.
+Rename (or edit if you aren't commiting to source control) terraform/credentials.auto.tfvars.sample. Update the variables as needed, this will require having an API token. The API token need similar permissions to the packer token.
 
 Update/copy full-clone.tf to build the VMs you want. The following fields would need to be update:
 * node-name (name of the proxmox node)
