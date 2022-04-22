@@ -4,3 +4,4 @@
 .terraform*
 credentials.pkr.hcl
 credentials.auto.tfvars
+vm_vars.auto.tfvars

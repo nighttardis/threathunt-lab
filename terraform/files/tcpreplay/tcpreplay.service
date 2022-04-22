@@ -1,0 +1,12 @@
+[Unit]
+Description=Tcpreplay of decrypted traffic from PolarProxy
+After=PolarProxy.service
+
+[Service]
+Type=simple
+ExecStart=/bin/sh -c 'nc localhost 57102 | tcpreplay -i decrypted -t -'
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

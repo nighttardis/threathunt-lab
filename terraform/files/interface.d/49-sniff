@@ -1,0 +1,8 @@
+auto ens20
+  iface ens20 inet manual
+    up ip link set ens20 promisc on
+    
+auto decrypted
+  iface decrypted inet manual
+    pre-up ip link add decrypted type dummy
+    up ip link set decrypted arp off up
