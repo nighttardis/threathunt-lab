@@ -14,6 +14,14 @@ variable "debian_source" {
     type = string
 }
 
+variable "isolated_network_bridge" {
+    type = string
+}
+
+variable "public_network_bridge" {
+    type = string
+}
+
 resource "proxmox_vm_qemu" "debian-inetsim" {
     
     # VM General Settings
@@ -40,17 +48,17 @@ resource "proxmox_vm_qemu" "debian-inetsim" {
 
     # VM Network Settings
     network {
-        bridge = "vmbr0"
+        bridge = var.public_network_bridge
         model  = "virtio"
     }
 
     network {
-        bridge = "vmbr1"
+        bridge = var.isolated_network_bridge
         model  = "virtio"
     }
 
     network {
-        bridge = "vmbr1"
+        bridge = var.isolated_network_bridge
         model  = "virtio"
     }
 

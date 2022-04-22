@@ -8,6 +8,7 @@ Create an environment that can be to learn/test threat hunting processes and pro
 ## Requirements
 Proxmox
 Familiarty with the commandline
+Familiarty with Packer and Terraform
 Debian ISO
 	
 ## Setup
@@ -66,7 +67,11 @@ Optionally you can setup the following fields
 * ipconfig (default will be dhcp)
 
 
-You will need to run ```terraform init``` from the terraform directory to pull in the needed proxmox provider, then ```terraform plan``` to see what will happen and finally ```terraform deploy``` to deploy the a VM.
+You will need to run ```terraform init``` from the terraform directory to pull in the needed proxmox provider, then ```terraform plan``` to see what will happen and finally ```terraform deploy``` to deploy the a VM. This will build through the process of setting up PolarProxy, InetSim and TCPReplay.
+
+## Manual Directions
+
+These are the steps that aren't ran by terraform if you want to see the full manual steps see [MANUAL.md](MANUAL.md)
 
 ### Proxmox:
 * Leave the default Linux Bridge
@@ -77,94 +82,7 @@ You will need to run ```terraform init``` from the terraform directory to pull i
   * Make note of the bridge name as it will be needed in the future
 	
 ### VM1:
-* OS: Debian
-* When creating this VM leave the network to be the default Linux bridge
-	* Disable the Firewall under the "advanced" options, not a requirement but will make things easier
-* After creating the VM add a second and third interface on the openvswitch bridge
-  * Select the VM -> Hardware -> Add -> Network Device -> Bridge (select the name of the bridge created previously)
-  * Disable the Firewall under the "advanced" options
-* Minimal install, with SSH server
-* Install curl (as root or with sudo)
-  ```bash
-  apt install curl gnupg
-  ```
-* Install inetsim
-  * Follow these directions https://www.inetsim.org/packages.html
-* Run ip addr and find the name of the second interface. The interface should say "DOWN" and not have an IP address. In my case it was ens19 and ens20.
-* Setup static IP for ens19
-  * Add the following to /etc/network/interfaces using your favoriate editor. Replacing the IP and ens interfaces as necessary.
-  ```
-  auto ens19
-  iface ens19 inet static
-    address 10.0.1.2/24
-    
-  auto ens20
-  iface ens20 inet manual
-    up ip link set ens20 promisc on
-    
-  auto decrypted
-  iface decrypted inet manual
-    pre-up ip link add decrypted type dummy
-    up ip link set decrypted arp off up
-  ```
-* Update "service_bind_address" and "dns_default_ip" to 10.0.1.2 in /etc/inetsim/inetsim.conf
-* If you want to use polarproxy (ssl decryption) comment out the line "start_service https"
-* Starting inetsim (as root or with sudo)
-```bash
-systemctl start inetsim
-systemctl enable inetsim
-```
-* Insall PolarProxy (optional)
-  ```bash
-  mkdir ~/PolarProxy
-  cd ~/PolarProxy/
-  curl https://www.netresec.com/?download=PolarProxy | tar -xzf -
-  ```
-* Starting PolarProxy (as root or with sudo)
-  * This will list on port 443, and forward decrypted traffic over port 80 to 10.0.1.2. The cert that polarproxy will generate will be availabe at 10.0.1.2:10080 which can be added to browsers to trust these certs (more info can be found: https://www.netresec.com/?page=PolarProxy). --pcapoverip 10.0.1.2:57102 allows for retreiving the decrypted traffic, this is a hack I'm using to generate traffic across the openvswitch bridge for port mirror.
-  ```bash
-  cd ~/PolarProxy/
-  cp ~/PolarProxy/PolarProxy.service /etc/systemd/system/PolarProxy.service
-  ```
-  * Update ```/etc/systemd/system/PolarProxy.service``` 
-    * The location of the binary and who to run the service as
-    * Update ExecStart
-      * -p from ```10443,80,443``` to ```443,80,80```
-      * Remove the -o variable and the path assuming you don't want it to write out pcaps
-      * Add
-        * ```--terminate --connect 10.0.1.2 -nosni nosni.inetsim.org --pcapoverip 57102```
-  ```bash
-  mkdir /var/log/PolarProxy
-  systemctl daemon-reload
-  systemctl start PolarProxy
-  systemstl enable PolarProxy
-  ```
-* Install tcpreplay
-  ```bash
-  apt install tcpreplay
-  ```
-* Run tcpreplay
-  * Create ```/etc/systemd/system/tcpreplay.service``` with the following content
-```
-[Unit]
-Description=Tcpreplay of decrypted traffic from PolarProxy
-After=PolarProxy.service
-
-[Service]
-Type=simple
-ExecStart=/bin/sh -c 'nc localhost 57102 | tcpreplay -i decrypted -t -'
-Restart=on-failure
-RestartSec=3
-
-[Install]
-WantedBy=multi-user.target
-```
-  * Enable/Start tcpreplay
-  ```bash
-  systemctl daemon-reload
-  systemctl start tcpreplay
-  systemctl enable tcpreplay
-  ```
+* After running the ```terraform apply``` command you will still need to manually setup zeek.
 * Install Zeek
   ```bash
   echo 'deb http://download.opensuse.org/repositories/security:/zeek/Debian_10/ /' | tee /etc/apt/sources.list.d/security:zeek.list
