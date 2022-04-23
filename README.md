@@ -71,7 +71,7 @@ You will need to run ```terraform init``` from the terraform directory to pull i
 
 ## Manual Directions
 
-These are the steps that aren't ran by terraform if you want to see the full manual steps see [MANUAL.md](MANUAL.md)
+These are the steps that aren't ran by terraform if you want to see the full manual steps see [MANUAL.md](MANUAL.mda)
 
 ### Proxmox:
 * Leave the default Linux Bridge
@@ -82,72 +82,7 @@ These are the steps that aren't ran by terraform if you want to see the full man
   * Make note of the bridge name as it will be needed in the future
 	
 ### VM1:
-* After running the ```terraform apply``` command you will still need to manually setup zeek.
-* Install Zeek
-  ```bash
-  echo 'deb http://download.opensuse.org/repositories/security:/zeek/Debian_10/ /' | tee /etc/apt/sources.list.d/security:zeek.list
-  curl -fsSL https://download.opensuse.org/repositories/security:zeek/Debian_10/Release.key | gpg --dearmor | tee /etc/apt/trusted.gpg.d/security_zeek.gpg > /dev/null
-  apt update
-  apt install zeek
-  ```
-* Configure Zeek
-  * Edit `/opt/zeek/etc/node.cfg` and setup multiple workers for the multiple interfaces
-    * Comment out the [zeek] section, Uncomment out the other sections, updating the two workers for the proper interfaces.
-  ```
-  #[zeek]
-  #type=standalone
-  #host=localhost
-  #interface=ens20
-  ```
-
-  ```
-  [logger-1]
-  type=logger
-  host=localhost
-  #
-  [manager]
-  type=manager
-  host=localhost
-  #
-  [proxy-1]
-  type=proxy
-  host=localhost
-  #
-  [worker-1]
-  type=worker
-  host=localhost
-  interface=decrypted
-  #
-  [worker-2]
-  type=worker
-  host=localhost
-  interface=ens20
-  ```
-  * Change zeek logs to be json formated
-  ```bash
-  cat "@load tuning/json-logs" >> /opt/zeek/share/zeek/site/local.zeek
-  ```
-  * Setup ```/etc/systemd/system/zeek.service``` with the following
-  ```
-  Description=Zeek NSM Engine
-  After=network.target
-  
-  [Service]
-  Type=forking
-  ExecStartPre=/opt/zeek/bin/zeekctl config
-  ExecStartPre=/opt/zeek/bin/zeekctl install
-  ExecStart=/opt/zeek/bin/zeekctl start
-  ExecStop=/opt/zeek/bin/zeekctl stop
-  
-  [Install]
-  WantedBy=multi-user.target
-  ```
-  * Start/Enable Zeek
-  ```bash
-  systemctl daemon-reload
-  systemctl start zeek
-  systemctl enable zeek
-  ```
+* After running the ```terraform apply``` command you will stand up the first VM with InetSim, PolarProxy and Zeek.
   
 ### Proxmox:
 

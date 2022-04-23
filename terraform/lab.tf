@@ -14,6 +14,10 @@ variable "debian_source" {
     type = string
 }
 
+variable "ubuntu_source" {
+    type = string
+}
+
 variable "isolated_network_bridge" {
     type = string
 }
@@ -90,6 +94,7 @@ resource "proxmox_vm_qemu" "debian-inetsim" {
       private_key = "${file(var.packer_ssh_key)}"
     }
 
+    # Setting up inetsim
     provisioner "file" {
         source = "files/packages/inetsim.list"
         destination = "/tmp/inetsim.list"
@@ -97,7 +102,7 @@ resource "proxmox_vm_qemu" "debian-inetsim" {
 
     provisioner "remote-exec" {
       inline = [
-          "sudo mv /tmp/inetsim.list etc/apt/sources.list.d/inetsim.list",
+          "sudo mv /tmp/inetsim.list /etc/apt/sources.list.d/inetsim.list",
           "wget -O /tmp/inetsim-archive-signing-key.asc https://www.inetsim.org/inetsim-archive-signing-key.asc",
           "sudo apt-key add /tmp/inetsim-archive-signing-key.asc",
           "sudo rm /tmp/inetsim-archive-signing-key.asc"
@@ -111,19 +116,6 @@ resource "proxmox_vm_qemu" "debian-inetsim" {
       ]
     }
 
-    provisioner "file" {
-        source = "files/interface.d/49-sniff"
-        destination = "/tmp/49-sniff"
-      
-    }
-
-    provisioner "remote-exec" {
-        inline = [
-          "sudo cp /tmp/49-sniff /etc/network/interfaces.d/49-sniff"
-        ]
-    }
-
-    # Configure inetsim
     provisioner "remote-exec" {
         inline = [
           "sudo sed -i 's/^#service_bind_address.*/service_bind_address 10.0.1.2/' /etc/inetsim/inetsim.conf",
@@ -169,8 +161,108 @@ resource "proxmox_vm_qemu" "debian-inetsim" {
         ]      
     }
 
+    # Setting up network sniffing interfaces
+    provisioner "file" {
+        source = "files/interface.d/49-sniff"
+        destination = "/tmp/49-sniff"
+      
+    }
+
+    provisioner "remote-exec" {
+        inline = [
+          "sudo cp /tmp/49-sniff /etc/network/interfaces.d/49-sniff"
+        ]
+    }
+
+    # Setting up Zeek
+    provisioner "file" {
+        source = "files/packages/zeek.list"
+        destination = "/tmp/zeek.list"
+    }
+
+    provisioner "remote-exec" {
+        inline = [
+          "sudo mv /tmp/zeek.list /etc/apt/sources.list.d/zeek.list",
+          "curl -fsSL https://download.opensuse.org/repositories/security:zeek/Debian_11/Release.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/security_zeek.gpg > /dev/null",
+          "sudo apt update",
+          "sudo apt install -y zeek"
+        ]
+    }
+
+    provisioner "file" {
+        source = "files/zeek/node.cfg"
+        destination = "/tmp/node.cfg"    
+    }
+
+    provisioner "file" {
+        source = "files/zeek/zeek.service"
+        destination = "/tmp/zeek.service"
+    }
+
+    provisioner "remote-exec" {
+        inline = [
+          "sudo mv /tmp/node.cfg /opt/zeek/etc/node.cfg",
+          "sudo mv /tmp/zeek.service /etc/systemd/system/zeek.service",
+          "echo @load tuning/json-logs | sudo tee -a /opt/zeek/share/zeek/site/local.zeek",
+          "sudo systemctl daemon-reload",
+          "sudo systemctl enable zeek"
+        ]      
+    }
+
+    provisioner "remote-exec" {
+        inline = [
+          "sudo reboot"
+        ]
+        on_failure = continue
+    }
+
     provisioner "local-exec" {
         command = "echo Run \"ovs-vsctl -- --id=@p get port tap${self.vmid}i2 -- --id=@m create mirror name=span1 select-all=true output-port=@p -- set bridge vmbr1 mirrors=@m\" on ${var.proxmox_host}"  
     }
 
+}
+
+# Logger base from detection lab
+resource "proxmox_vm_qemu" "ubuntu-logger" {
+    # VM General Settings
+    target_node = var.proxmox_host
+    vmid = "301"
+    name = "ubuntu-logger"
+
+    # VM Advanced General Settings
+    onboot = false 
+
+    # VM OS Settings
+    clone = var.ubuntu_source
+
+    # VM System Settings
+    agent = 1
+    
+    # VM CPU Settings
+    cores = 2
+    sockets = 1
+    cpu = "host"    
+    
+    # VM Memory Settings
+    memory = 2048
+
+    disk {
+        size = "64G"
+        type = "scsi"
+        storage = "VMs"
+        cache = "writeback"
+        format = "qcow2"
+        discard = "on"
+    }
+
+    # VM Network Settings
+    network {
+        bridge = var.public_network_bridge
+        model  = "virtio"
+    }
+
+    network {
+        bridge = var.isolated_network_bridge
+        model  = "virtio"
+    }
 }

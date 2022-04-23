@@ -1,0 +1,12 @@
+Description=Zeek NSM Engine
+After=network.target
+  
+[Service]
+Type=forking
+ExecStartPre=/opt/zeek/bin/zeekctl config
+ExecStartPre=/opt/zeek/bin/zeekctl install
+ExecStart=/opt/zeek/bin/zeekctl start
+ExecStop=/opt/zeek/bin/zeekctl stop
+  
+[Install]
+WantedBy=multi-user.target
