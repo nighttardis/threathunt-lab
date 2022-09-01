@@ -1,0 +1,129 @@
+- name: Install Requirements
+  become: yes
+  apt:
+    state: present 
+    name:
+      - jq 
+      - whois
+      - build-essential
+      - git
+      - unzip
+      - mysql-server
+      - redis-server
+      - python3-pip
+
+- name: Download yq
+  become: yes
+  get_url:
+    url: https://github.com/mikefarah/yq/releases/download/v4.25.1/yq_linux_amd64
+    dest: /usr/bin/yq
+    mode: 0755
+
+- name: Create a new ext4 primary partition
+  become: yes
+  community.general.parted:
+    device: /dev/sda
+    number: 1
+    state: present
+    fs_type: ext4
+
+- name: Create ext4 filesytem
+  become: yes
+  community.general.filesystem:
+    fstype: ext4
+    dev: /dev/sda1
+
+- name: Update fstab for storage
+  become: yes
+  ansible.posix.mount:
+    path: /opt/splunk
+    src: /dev/sda1
+    fstype: ext4
+    state: present
+
+- name: Mount storage
+  become: yes
+  ansible.posix.mount:
+    path: /opt/splunk
+    src: /dev/sda1
+    state: mounted
+    fstype: ext4
+
+- name: Install Splunk
+  args: 
+    executable: /bin/bash
+  become: yes
+  environment:
+    MAXMIND_LICENSE: ""
+    BASE64_ENCODED_SPLUNK_LICENSE: ""
+  shell: |
+    # Get a free Maxmind license here: https://www.maxmind.com/en/geolite2/signup
+    # Required for the ASNgen app to work: https://splunkbase.splunk.com/app/3531/
+    export MAXMIND_LICENSE=
+    if [ -z $MAXMIND_LICENSE ]; then
+      echo "Note: You have not entered a MaxMind license key in the 'Install Splunk' Ansible task, so the ASNgen Splunk app may not work correctly."
+      echo "However, it is not required and everything else should function correctly."
+    fi
+    # Check if Splunk is already installed
+    if [ -f "/opt/splunk/bin/splunk" ]; then
+      echo "[$(date +%H:%M:%S)]: Splunk is already installed"
+    else
+      echo "[$(date +%H:%M:%S)]: Installing Splunk..."
+      # Get download.splunk.com into the DNS cache. Sometimes resolution randomly fails during wget below
+      dig @8.8.8.8 download.splunk.com >/dev/null
+      dig @8.8.8.8 splunk.com >/dev/null
+      dig @8.8.8.8 www.splunk.com >/dev/null
+      # Try to resolve the latest version of Splunk by parsing the HTML on the downloads page
+      echo "[$(date +%H:%M:%S)]: Attempting to autoresolve the latest version of Splunk..."
+      LATEST_SPLUNK=$(curl https://www.splunk.com/en_us/download/splunk-enterprise.html | grep -i deb | grep -Eo "data-link=\"................................................................................................................................" | cut -d '"' -f 2)
+      # Sanity check what was returned from the auto-parse attempt
+      if [[ "$(echo $LATEST_SPLUNK | grep -c "^https:")" -eq 1 ]] && [[ "$(echo $LATEST_SPLUNK | grep -c "\.deb$")" -eq 1 ]]; then
+        echo "[$(date +%H:%M:%S)]: The URL to the latest Splunk version was automatically resolved as: $LATEST_SPLUNK"
+        echo "[$(date +%H:%M:%S)]: Attempting to download..."
+        wget --progress=bar:force -P /opt "$LATEST_SPLUNK"
+      else
+        echo "[$(date +%H:%M:%S)]: Unable to auto-resolve the latest Splunk version. Falling back to hardcoded URL..."
+        # Download Hardcoded Splunk
+        wget --progress=bar:force -O /opt/splunk-8.0.2-a7f645ddaf91-linux-2.6-amd64.deb 'https://download.splunk.com/products/splunk/releases/8.0.2/linux/splunk-8.0.2-a7f645ddaf91-linux-2.6-amd64.deb&wget=true'
+      fi
+      if ! ls /opt/splunk*.deb 1> /dev/null 2>&1; then
+        echo "Something went wrong while trying to download Splunk. This script cannot continue. Exiting."
+        exit 1
+      fi
+      if ! dpkg -i /opt/splunk*.deb > /dev/null; then
+        echo "Something went wrong while trying to install Splunk. This script cannot continue. Exiting."
+        exit 1
+      fi
+
+      # Reconfigure storage engine to make splunk happier
+      echo -e '\n\n[kvstore]\nstorageEngine=wiredTiger' >> /opt/splunk/etc/system/local/server.conf
+
+      /opt/splunk/bin/splunk start --accept-license --answer-yes --no-prompt --seed-passwd changeme
+
+      # Add a Splunk TCP input on port 9997
+      echo -e "[splunktcp://9997]\nconnection_host = ip" >/opt/splunk/etc/apps/search/local/inputs.conf
+      cp /opt/splunk/etc/system/default/limits.conf /opt/splunk/etc/system/local/limits.conf
+      # Bump the memtable limits to allow for the ASN lookup table
+      sed -i.bak 's/max_memtable_bytes = 10000000/max_memtable_bytes = 30000000/g' /opt/splunk/etc/system/local/limits.conf
+      # Skip Splunk Tour and Change Password Dialog
+      echo "[$(date +%H:%M:%S)]: Disabling the Splunk tour prompt..."
+      touch /opt/splunk/etc/.ui_login
+      mkdir -p /opt/splunk/etc/users/admin/search/local
+      echo -e "[search-tour]\nviewed = 1" >/opt/splunk/etc/system/local/ui-tour.conf
+      # Source: https://answers.splunk.com/answers/660728/how-to-disable-the-modal-pop-up-help-us-to-improve.html
+      if [ ! -d "/opt/splunk/etc/users/admin/user-prefs/local" ]; then
+        mkdir -p "/opt/splunk/etc/users/admin/user-prefs/local"
+      fi
+      echo '[general]
+      render_version_messages = 1
+      dismissedInstrumentationOptInVersion = 4
+      notification_python_3_impact = false
+      display.page.home.dashboardId = /servicesNS/nobody/search/data/ui/views/logger_dashboard' > /opt/splunk/etc/users/admin/user-prefs/local/user-prefs.conf
+      # Enable SSL Login for Splunk
+      echo -e "[settings]\nenableSplunkWebSSL = true" >/opt/splunk/etc/system/local/web.conf
+      # Reboot Splunk to make changes take effect
+        /opt/splunk/bin/splunk restart
+        /opt/splunk/bin/splunk enable boot-start
+      fi
+  register: install_splunk
+  changed_when: "'The Splunk web interface is at https://logger:8000' in install_splunk.stdout"
