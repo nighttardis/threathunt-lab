@@ -1,0 +1,4 @@
+auto decrypted
+  iface decrypted inet manual
+    pre-up ip link add decrypted type dummy
+    up ip link set decrypted arp off up

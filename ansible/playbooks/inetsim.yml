@@ -1,0 +1,11 @@
+- hosts: all
+  gather_facts: false
+  vars:
+    hostname: inetsim
+  roles:
+    - linux_common
+    - inetsim
+    - polarproxy
+    - tcpreplay
+    - zeek
+    - reboot

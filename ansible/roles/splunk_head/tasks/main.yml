@@ -1,0 +1,4 @@
+---
+- include: install-requirements.yml
+- include: setup-storage.yml
+- include: install-splunk.yml

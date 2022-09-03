@@ -26,6 +26,18 @@ variable "public_network_bridge" {
     type = string
 }
 
+variable "splunk_binary" {
+    type = string
+}
+
+variable "splunk_url" {
+    type = string
+}
+
+variable "splunk_admin_password" {
+    type = string
+}
+
 resource "proxmox_vm_qemu" "debian-inetsim" {
     
     # VM General Settings
@@ -87,133 +99,161 @@ resource "proxmox_vm_qemu" "debian-inetsim" {
     # SSH KEY
     # EOF
 
-    connection {
-      type = "ssh"
-      user = "packer"
-      host = self.ssh_host
-      private_key = "${file(var.packer_ssh_key)}"
-    }
+    # connection {
+    #   type = "ssh"
+    #   user = "packer"
+    #   host = self.ssh_host
+    #   private_key = "${file(var.packer_ssh_key)}"
+    # }
 
-    # Setting up inetsim
-    provisioner "file" {
-        source = "files/packages/inetsim.list"
-        destination = "/tmp/inetsim.list"
-    }
+    # # Setting up inetsim
+    # provisioner "file" {
+    #     source = "files/packages/inetsim.list"
+    #     destination = "/tmp/inetsim.list"
+    # }
 
-    provisioner "remote-exec" {
-      inline = [
-          "sudo mv /tmp/inetsim.list /etc/apt/sources.list.d/inetsim.list",
-          "wget -O /tmp/inetsim-archive-signing-key.asc https://www.inetsim.org/inetsim-archive-signing-key.asc",
-          "sudo apt-key add /tmp/inetsim-archive-signing-key.asc",
-          "sudo rm /tmp/inetsim-archive-signing-key.asc"
-      ]
-    }
+    # provisioner "remote-exec" {
+    #   inline = [
+    #       "sudo mv /tmp/inetsim.list /etc/apt/sources.list.d/inetsim.list",
+    #       "wget -O /tmp/inetsim-archive-signing-key.asc https://www.inetsim.org/inetsim-archive-signing-key.asc",
+    #       "sudo apt-key add /tmp/inetsim-archive-signing-key.asc",
+    #       "sudo rm /tmp/inetsim-archive-signing-key.asc"
+    #   ]
+    # }
 
-    provisioner "remote-exec" {
-      inline = [
-        "sudo apt update",
-        "sudo apt install -y curl gnupg inetsim"
-      ]
-    }
+    # provisioner "remote-exec" {
+    #   inline = [
+    #     "sudo apt update",
+    #     "sudo apt install -y curl gnupg inetsim"
+    #   ]
+    # }
 
-    provisioner "remote-exec" {
-        inline = [
-          "sudo sed -i 's/^#service_bind_address.*/service_bind_address 10.0.1.2/' /etc/inetsim/inetsim.conf",
-          "sudo sed -i 's/^start_service https/#start_service https/' /etc/inetsim/inetsim.conf",
-          "sudo systemctl start inetsim",
-          "sudo systemctl enable inetsim"
-        ]
-    }
+    # provisioner "remote-exec" {
+    #     inline = [
+    #       "sudo sed -i 's/^#service_bind_address.*/service_bind_address 10.0.1.2/' /etc/inetsim/inetsim.conf",
+    #       "sudo sed -i 's/^start_service https/#start_service https/' /etc/inetsim/inetsim.conf",
+    #       "sudo systemctl start inetsim",
+    #       "sudo systemctl enable inetsim"
+    #     ]
+    # }
 
-    # Configure PolarProxy
-    provisioner "file" {
-      source = "files/PolarProxy/PolarProxy.service"
-      destination = "/tmp/PolarProxy.service"
-    }
+    # # Configure PolarProxy
+    # provisioner "file" {
+    #   source = "files/PolarProxy/PolarProxy.service"
+    #   destination = "/tmp/PolarProxy.service"
+    # }
 
-    provisioner "remote-exec" {
-        inline = [
-          "mkdir /home/packer/PolarProxy",
-          "curl https://www.netresec.com/?download=PolarProxy -o /home/packer/PolarProxy/PolarProxy.tar.gz",
-          "sudo mkdir -p /usr/local/bin/PolarProxy",
-          "sudo tar -xzf /home/packer/PolarProxy/PolarProxy.tar.gz -C /usr/local/bin/PolarProxy",
-          "sudo mv /tmp/PolarProxy.service /etc/systemd/system/PolarProxy.service",
-          "sudo mkdir -p /var/log/PolarProxy",
-          "sudo systemctl daemon-reload",
-          "sudo systemctl start PolarProxy",
-          "sudo systemctl enable PolarProxy"
-        ]
-    }
+    # provisioner "remote-exec" {
+    #     inline = [
+    #       "mkdir /home/packer/PolarProxy",
+    #       "curl https://www.netresec.com/?download=PolarProxy -o /home/packer/PolarProxy/PolarProxy.tar.gz",
+    #       "sudo mkdir -p /usr/local/bin/PolarProxy",
+    #       "sudo tar -xzf /home/packer/PolarProxy/PolarProxy.tar.gz -C /usr/local/bin/PolarProxy",
+    #       "sudo mv /tmp/PolarProxy.service /etc/systemd/system/PolarProxy.service",
+    #       "sudo mkdir -p /var/log/PolarProxy",
+    #       "sudo systemctl daemon-reload",
+    #       "sudo systemctl start PolarProxy",
+    #       "sudo systemctl enable PolarProxy"
+    #     ]
+    # }
 
-    # Configure TCPReplay
-    provisioner "file" {
-        source = "files/tcpreplay/tcpreplay.service"
-        destination = "/tmp/tcpreplay.service"
-    }
+    # # Configure TCPReplay
+    # provisioner "file" {
+    #     source = "files/tcpreplay/tcpreplay.service"
+    #     destination = "/tmp/tcpreplay.service"
+    # }
 
-    provisioner "remote-exec" {
-        inline = [
-            "sudo apt install -y tcpreplay",
-            "sudo mv /tmp/tcpreplay.service /etc/systemd/system/tcpreplay.service",
-            "sudo systemctl daemon-reload",
-            "sudo systemctl start tcpreplay",
-            "sudo systemctl enable tcpreplay"            
-        ]      
-    }
+    # provisioner "remote-exec" {
+    #     inline = [
+    #         "sudo apt install -y tcpreplay",
+    #         "sudo mv /tmp/tcpreplay.service /etc/systemd/system/tcpreplay.service",
+    #         "sudo systemctl daemon-reload",
+    #         "sudo systemctl start tcpreplay",
+    #         "sudo systemctl enable tcpreplay"            
+    #     ]      
+    # }
 
-    # Setting up network sniffing interfaces
-    provisioner "file" {
-        source = "files/interface.d/49-sniff"
-        destination = "/tmp/49-sniff"
+    # # Setting up network sniffing interfaces
+    # provisioner "file" {
+    #     source = "files/interface.d/49-sniff"
+    #     destination = "/tmp/49-sniff"
       
-    }
+    # }
 
-    provisioner "remote-exec" {
-        inline = [
-          "sudo cp /tmp/49-sniff /etc/network/interfaces.d/49-sniff"
+    # provisioner "remote-exec" {
+    #     inline = [
+    #       "sudo cp /tmp/49-sniff /etc/network/interfaces.d/49-sniff"
+    #     ]
+    # }
+
+    # # Setting up Zeek
+    # provisioner "file" {
+    #     source = "files/packages/zeek.list"
+    #     destination = "/tmp/zeek.list"
+    # }
+
+    # provisioner "remote-exec" {
+    #     inline = [
+    #       "sudo mv /tmp/zeek.list /etc/apt/sources.list.d/zeek.list",
+    #       "curl -fsSL https://download.opensuse.org/repositories/security:zeek/Debian_11/Release.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/security_zeek.gpg > /dev/null",
+    #       "sudo apt update",
+    #       "sudo apt install -y zeek"
+    #     ]
+    # }
+
+    # provisioner "file" {
+    #     source = "files/zeek/node.cfg"
+    #     destination = "/tmp/node.cfg"    
+    # }
+
+    # provisioner "file" {
+    #     source = "files/zeek/zeek.service"
+    #     destination = "/tmp/zeek.service"
+    # }
+
+    # provisioner "remote-exec" {
+    #     inline = [
+    #       "sudo mv /tmp/node.cfg /opt/zeek/etc/node.cfg",
+    #       "sudo mv /tmp/zeek.service /etc/systemd/system/zeek.service",
+    #       "echo @load tuning/json-logs | sudo tee -a /opt/zeek/share/zeek/site/local.zeek",
+    #       "sudo systemctl daemon-reload",
+    #       "sudo systemctl enable zeek"
+    #     ]      
+    # }
+
+    # provisioner "remote-exec" {
+    #     inline = [
+    #       "sudo reboot"
+    #     ]
+    #     on_failure = continue
+    # }
+
+    provisioner "local-exec" {
+        command = [
+            "echo ${data.vault_generic_secret.packer.data["key"]} >> ~/.ssh/packer",
+            "chmod 600 ~/.ssh/packer"
         ]
     }
 
-    # Setting up Zeek
-    provisioner "file" {
-        source = "files/packages/zeek.list"
-        destination = "/tmp/zeek.list"
-    }
-
     provisioner "remote-exec" {
         inline = [
-          "sudo mv /tmp/zeek.list /etc/apt/sources.list.d/zeek.list",
-          "curl -fsSL https://download.opensuse.org/repositories/security:zeek/Debian_11/Release.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/security_zeek.gpg > /dev/null",
-          "sudo apt update",
-          "sudo apt install -y zeek"
+          "echo booted"
         ]
+
+        connection {
+          type = "ssh"
+          user = "packer"
+          host = self.ssh_host
+          private_key = file("~/.ssh/packer")
+        }
     }
 
-    provisioner "file" {
-        source = "files/zeek/node.cfg"
-        destination = "/tmp/node.cfg"    
-    }
-
-    provisioner "file" {
-        source = "files/zeek/zeek.service"
-        destination = "/tmp/zeek.service"
-    }
-
-    provisioner "remote-exec" {
-        inline = [
-          "sudo mv /tmp/node.cfg /opt/zeek/etc/node.cfg",
-          "sudo mv /tmp/zeek.service /etc/systemd/system/zeek.service",
-          "echo @load tuning/json-logs | sudo tee -a /opt/zeek/share/zeek/site/local.zeek",
-          "sudo systemctl daemon-reload",
-          "sudo systemctl enable zeek"
-        ]      
-    }
-
-    provisioner "remote-exec" {
-        inline = [
-          "sudo reboot"
+    provisioner "local-exec" {
+        working_dir = "../ansible"
+        command = [
+            "ansible-playbook -u packer --private-key ~/.ssh/packer -i ${self.ssh_host} playbooks/inetsim.yml",
+            "rm ~/.ssh/packer"
         ]
-        on_failure = continue
     }
 
     provisioner "local-exec" {
@@ -265,4 +305,33 @@ resource "proxmox_vm_qemu" "ubuntu-logger" {
         bridge = var.isolated_network_bridge
         model  = "virtio"
     }
+
+    provisioner "local-exec" {
+        command = [
+            "echo ${data.vault_generic_secret.packer.data["key"]} >> ~/.ssh/packer",
+            "chmod 600 ~/.ssh/packer"
+        ]
+    }
+
+    provisioner "remote-exec" {
+        inline = [
+          "echo booted"
+        ]
+
+        connection {
+          type = "ssh"
+          user = "packer"
+          host = self.ssh_host
+          private_key = file("~/.ssh/packer")
+        }
+    }
+
+    provisioner "local-exec" {
+        working_dir = "../ansible"
+        command = [
+            "ansible-playbook -u packer --private-key ~/.ssh/packer -i ${self.ssh_host} playbooks/logger.yml -e 'splunk_url=${var.splunk_url} splunk_binary=${var.splunk_binary} splunk_admin_password=${data.vault_generic_secret.splunk.data[var.splunk_admin_password]}'",
+            "rm ~/.ssh/packer"
+        ]
+    }
+
 }

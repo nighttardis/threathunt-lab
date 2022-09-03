@@ -1,0 +1,31 @@
+---
+
+- name: Create a new ext4 primary partition
+  become: yes
+  community.general.parted:
+    device: /dev/sda
+    number: 1
+    state: present
+    fs_type: ext4
+
+- name: Create ext4 filesytem
+  become: yes
+  community.general.filesystem:
+    fstype: ext4
+    dev: /dev/sda1
+
+- name: Update fstab for storage
+  become: yes
+  ansible.posix.mount:
+    path: /opt/splunk
+    src: /dev/sda1
+    fstype: ext4
+    state: present
+
+- name: Mount storage
+  become: yes
+  ansible.posix.mount:
+    path: /opt/splunk
+    src: /dev/sda1
+    state: mounted
+    fstype: ext4

@@ -1,0 +1,5 @@
+---
+
+- name: Change Hostname
+  hostname:
+    name: "{{ hostname }}-{{ 9999 | random }}"

@@ -1,0 +1,27 @@
+---
+
+- name: add sniff interface
+  become: yes
+  copy:
+    src: 49-sniff
+    dst: /etc/network/interfaces.d/49-sniff
+
+- name: copy node config
+  become: yes
+  copy:
+    src: node.cfg
+    dst: /opt/zeek/etc/node.cfg
+
+- name: copy zeek service
+  become: yes
+  copy:
+    src: zeek.service
+    dst: /etc/systemd/system/zeek.service
+
+- name: set logs to json
+  become: yes
+  blockinfile:
+    path: /opt/zeek/share/zeek/site/local.zeek
+    insertafter: EOF
+    create: yes
+    block: "@load tuning/json-logs"

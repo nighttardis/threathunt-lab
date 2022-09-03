@@ -1,0 +1,102 @@
+---
+
+- name: add splunk group
+  become: yes
+  tags:
+    - install
+    - security
+  group:
+    name: splunk
+    state: present
+
+- name: add splunk user
+  become: yes
+  tags:
+    - install
+    - security
+  user:
+    name: splunk
+    comment: "Splunk Service User"
+    shell: /usr/sbin/nologin
+    groups: splunk
+    createhome: yes
+
+- name: check if splunk is installed
+  tags:
+    - install
+  stat:
+    path: /opt/splunk
+  register: splunk_path
+
+- name: splunk installed
+  tags:
+    - install
+  debug:
+    msg: "Splunk is already installed under /opt/splunk"
+  when: splunk_path.stat.exists
+
+- name: download splunk
+  tags:
+    - install
+  get_url:
+    url: "{{ splunk_url }}/{{ splunk_binary }}"
+    dst: /tmp/
+  when: splunk_path.stat.exists == false
+
+- name: install splunk
+  tags:
+    - install
+  unarchive:
+    remote_src: yes
+    src: /tmp/{{ splunk_binary }}
+    dest: /opt/
+    owner: splunk
+    group: splunk
+    creates: yes
+  become: yes
+  when: splunk_path.stat.exists == false
+
+- name: migrate to wiredtirger
+  tags:
+    - install
+  become: yes
+  become_user: splunk
+  blockinfile:
+    path: /opt/splunk/etc/system/local/server.conf
+    insertafter: EOF
+    create: yes
+    block: |
+      [kvstore]
+      storageEngine=wiredTiger
+  when: splunk_path.stat.exists == false
+
+- name: accept license and start splunk
+  tags:
+    - install
+  become: yes
+  become_user: splunk
+  shell: /opt/splunk/bin/splunk start --accept-license --answer-yes --no-prompt --seed-passwd {{ splunk_admin_password }}
+  when: splunk_path.stat.exists == false
+
+- name: enable autostart
+  tags:
+    - install
+  become: yes
+  shell: /opt/splunk/bin/splunk enable boot-start -user splunk
+  when: splunk_path.stat.exists == false
+
+- name: restart splunk
+  tags:
+    - install
+  become: yes
+  service:
+    name: splunkd
+    state: restarted
+  when: splunk_path.stat.exists == false
+
+- name: clean up splunk
+  tags:
+    - install
+  file:
+    path: /tmp/{{ splunk_binary }}
+    state: absent

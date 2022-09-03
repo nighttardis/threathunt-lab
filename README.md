@@ -102,3 +102,4 @@ ovs-vsctl -- --id=@p get port tap101i2 -- --id=@m create mirror name=span1 selec
 * https://www.netresec.com/?page=Blog&month=2020-01&post=Sniffing-Decrypted-TLS-Traffic-with-Security-Onion
 * https://santosomar.medium.com/security-onion-redhunt-os-proxmox-and-open-vswitch-6d6fbaaf0a51
 * https://holdmybeersecurity.com/2020/10/03/creating-a-windows-10-64-bit-vm-on-proxmox-with-packer-v1-6-3-and-vault/ (Windows Packer)
+* https://github.com/splunk/attack_range (most of the splunk ansible files)

@@ -1,0 +1,20 @@
+---
+
+- name: Deploy InetSim repo
+  become: yes
+  copy:
+    src: inetsim.list
+    dst: /etc/apt/sources.list.d/inetsim.list
+  
+- name: Add InetSim Key
+  become: yes
+  apt_key:
+    url: https://www.inetsim.org/inetsim-archive-signing-key.asc
+    state: present
+
+- name: Install InetSim
+  become: yes
+  apt:
+    name: inetsim
+    update_cache: yes
+    state: present

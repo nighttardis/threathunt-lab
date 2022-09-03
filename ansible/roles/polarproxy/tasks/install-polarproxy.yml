@@ -1,0 +1,34 @@
+---
+
+- name: download polarproxy
+  get_url:
+    url: https://www.netresec.com/?download=PolarProxy
+    dest: /tmp/PolarProxy.tar.gz
+
+- name: install polarproxy
+  become: yes
+  unarchive:
+    remote_src: yes
+    src: /tmp/PolarProxy.tar.gz
+    dest: /usr/local/bin/PolarProxy
+    creates: yes
+
+- name: create log dir for polarproxy
+  become: yes
+  file:
+    path: /var/log/PolarProxy
+    state: directory
+
+- name: add service file for polaryproxy
+  become: yes
+  copy:
+    src: PolarProxy.service
+    dst: /etc/systemd/system/PolarProxy.service
+
+- name: start service
+  become: yes
+  systemd:
+    name: PolarProxy
+    state: started
+    enabled: yes
+    daemon_reload: yes

@@ -1,0 +1,3 @@
+---
+- include: install-polarproxy.yml
+  when: polar_proxy == "1"

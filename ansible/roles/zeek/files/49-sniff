@@ -1,0 +1,3 @@
+auto ens20
+  iface ens20 inet manual
+    up ip link set ens20 promisc on

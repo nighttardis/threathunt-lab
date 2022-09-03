@@ -1,0 +1,20 @@
+---
+
+- name: Deploy Zeek repo
+  become: yes
+  copy:
+    src: zeek.list
+    dst: /etc/apt/sources.list.d/zeek.list
+
+- name: Add Zeek Key
+  become: yes
+  apt_key:
+    url: https://download.opensuse.org/repositories/security:zeek/Debian_11/Release.key
+    state: present
+
+- name: Install Zeek
+  become: yes
+  apt:
+    name: zeek
+    update_cache: yes
+    state: present

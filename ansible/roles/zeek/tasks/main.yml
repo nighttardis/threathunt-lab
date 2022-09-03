@@ -1,0 +1,3 @@
+---
+- include: install-zeek.yml
+- include: config-zeek.yml

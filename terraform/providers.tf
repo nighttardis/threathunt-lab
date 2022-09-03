@@ -11,6 +11,9 @@ terraform {
             source = "telmate/proxmox"
             version = "2.9.3"
         }
+        vault = {
+            source = "vault"
+        }
     }
 }
 
@@ -39,6 +42,24 @@ variable "proxmox_vault_root" {
     sensitive = true
 }
 
+variable "packer_vault_ssh_key" {
+    type = string
+    default = "secrets/packer/user"
+    sensitive = true
+}
+
+variable "splunk_vault_root" {
+    type = string
+    sensitive = true
+    default = "secrets/data/splunk"
+}
+
+variable "splunk_admin_password" {
+    type = string
+    sensitive = true
+    default = "key"
+}
+
 provider "vault" {
     address = var.vault_address
 }
@@ -47,6 +68,13 @@ data "vault_generic_secret" "proxmox" {
     path = var.proxmox_vault_root
 }
 
+data "vault_generic_secret" "packer" {
+    path = var.packer_ssh_key + "/ssh_private"
+}
+
+data "vault_generic_secret" "splunk" {
+    path = var.splunk_vault_root
+}
 
 provider "proxmox" {
 

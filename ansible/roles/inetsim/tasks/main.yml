@@ -1,0 +1,3 @@
+---
+- include: install-inetsim.yml
+- include: config-inetsim.yml
