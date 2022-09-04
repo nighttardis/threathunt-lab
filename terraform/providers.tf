@@ -36,6 +36,8 @@ variable "proxmox_api_token_secret" {
     sensitive = true
 }
 
+### Vault config if not using vault comment this stuff out
+
 variable "proxmox_vault_root" {
     type = string
     default = "secrets/proxmox/token"
@@ -51,7 +53,7 @@ variable "packer_vault_ssh_key" {
 variable "splunk_vault_root" {
     type = string
     sensitive = true
-    default = "secrets/data/splunk"
+    default = "secrets/splunk"
 }
 
 variable "splunk_admin_password" {
@@ -69,17 +71,22 @@ data "vault_generic_secret" "proxmox" {
 }
 
 data "vault_generic_secret" "packer" {
-    path = var.packer_ssh_key + "/ssh_private"
+    path = "${var.packer_ssh_key}/ssh_private"
 }
 
 data "vault_generic_secret" "splunk" {
     path = var.splunk_vault_root
 }
 
+### End of Vault Config
+
 provider "proxmox" {
 
     pm_api_url = var.proxmox_api_url
+    ### Flip the next 4 lines if not using Vault
+    # pm_api_token_id = var.proxmox_api_token_id
     pm_api_token_id = data.vault_generic_secret.proxmox.data[var.proxmox_api_token_id]
+    # pm_api_token_secret = var.proxmox_api_token_secret
     pm_api_token_secret = data.vault_generic_secret.proxmox.data[var.proxmox_api_token_secret]
 
     # (Optional) Skip TLS Verification

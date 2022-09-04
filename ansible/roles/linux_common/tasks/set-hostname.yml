@@ -1,5 +1,6 @@
 ---
 
 - name: Change Hostname
+  become: yes
   hostname:
     name: "{{ hostname }}-{{ 9999 | random }}"

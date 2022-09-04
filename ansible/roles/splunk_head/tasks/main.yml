@@ -1,4 +1,4 @@
 ---
-- include: install-requirements.yml
-- include: setup-storage.yml
-- include: install-splunk.yml
+- include_tasks: install-requirements.yml
+- include_tasks: setup-storage.yml
+- include_tasks: install-splunk.yml

@@ -10,13 +10,13 @@
   become: yes
   copy:
     src: 50-decrypted
-    dst: /etc/network/interfaces.d/50-decrypted
+    dest: /etc/network/interfaces.d/50-decrypted
 
 - name: copy tcpreplay service
   become: yes
   copy:
     src: tcpreplay.service
-    dst: /etc/systemd/system/tcpreplay.service
+    dest: /etc/systemd/system/tcpreplay.service
 
 - name: start tcpreplay service
   become: yes

@@ -34,9 +34,11 @@ variable "splunk_url" {
     type = string
 }
 
-variable "splunk_admin_password" {
-    type = string
-}
+### Uncomment this for vault
+# variable "splunk_admin_password" {
+#    type = string
+# }
+###
 
 resource "proxmox_vm_qemu" "debian-inetsim" {
     
@@ -228,13 +230,6 @@ resource "proxmox_vm_qemu" "debian-inetsim" {
     #     on_failure = continue
     # }
 
-    provisioner "local-exec" {
-        command = [
-            "echo ${data.vault_generic_secret.packer.data["key"]} >> ~/.ssh/packer",
-            "chmod 600 ~/.ssh/packer"
-        ]
-    }
-
     provisioner "remote-exec" {
         inline = [
           "echo booted"
@@ -244,16 +239,26 @@ resource "proxmox_vm_qemu" "debian-inetsim" {
           type = "ssh"
           user = "packer"
           host = self.ssh_host
-          private_key = file("~/.ssh/packer")
+          private_key = data.vault_generic_secret.packer.data["key"]
+          timeout = "10m"
         }
     }
 
     provisioner "local-exec" {
+        command = "echo '${data.vault_generic_secret.packer.data["key"]}' >> ~/.ssh/packer"
+    }
+
+    provisioner "local-exec" {
+        command = "chmod 600 ~/.ssh/packer"
+    }
+
+    provisioner "local-exec" {
         working_dir = "../ansible"
-        command = [
-            "ansible-playbook -u packer --private-key ~/.ssh/packer -i ${self.ssh_host} playbooks/inetsim.yml",
-            "rm ~/.ssh/packer"
-        ]
+        command = "ansible-venv/bin/ansible-playbook -u packer --private-key ~/.ssh/packer -i '${self.ssh_host},' playbooks/inetsim.yml"
+    }
+
+    provisioner "local-exec" {
+        command = "rm ~/.ssh/packer"
     }
 
     provisioner "local-exec" {
@@ -306,32 +311,37 @@ resource "proxmox_vm_qemu" "ubuntu-logger" {
         model  = "virtio"
     }
 
-    provisioner "local-exec" {
-        command = [
-            "echo ${data.vault_generic_secret.packer.data["key"]} >> ~/.ssh/packer",
-            "chmod 600 ~/.ssh/packer"
-        ]
-    }
-
     provisioner "remote-exec" {
         inline = [
-          "echo booted"
+          "echo \"$(date -Is) booted\"",
+          "sleep 60",
+          "while ! tail -10 /var/log/cloud-init-output.log| grep \"Cloud-init .* finished\"; do echo \"$(date -Is) waiting for cloud-init\"; sleep 2; done"
         ]
 
         connection {
           type = "ssh"
           user = "packer"
           host = self.ssh_host
-          private_key = file("~/.ssh/packer")
+          private_key = data.vault_generic_secret.packer.data["key"]
+          timeout = "10m"
         }
     }
 
     provisioner "local-exec" {
+        command = "echo '${data.vault_generic_secret.packer.data["key"]}' >> ~/.ssh/packer"
+    }
+
+    provisioner "local-exec" {
+        command = "chmod 600 ~/.ssh/packer"
+    }
+
+    provisioner "local-exec" {
         working_dir = "../ansible"
-        command = [
-            "ansible-playbook -u packer --private-key ~/.ssh/packer -i ${self.ssh_host} playbooks/logger.yml -e 'splunk_url=${var.splunk_url} splunk_binary=${var.splunk_binary} splunk_admin_password=${data.vault_generic_secret.splunk.data[var.splunk_admin_password]}'",
-            "rm ~/.ssh/packer"
-        ]
+        command = "ansible-venv/bin/ansible-playbook -u packer --private-key ~/.ssh/packer -i '${self.ssh_host},' playbooks/logger.yml -e 'splunk_url=${var.splunk_url} splunk_binary=${var.splunk_binary} splunk_admin_password=${data.vault_generic_secret.splunk.data[var.splunk_admin_password]} set_hostname=0'"
+    }
+
+    provisioner "local-exec" {
+        command = "rm ~/.ssh/packer"
     }
 
 }

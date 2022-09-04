@@ -4,7 +4,7 @@
   become: yes
   copy:
     src: inetsim.list
-    dst: /etc/apt/sources.list.d/inetsim.list
+    dest: /etc/apt/sources.list.d/inetsim.list
   
 - name: Add InetSim Key
   become: yes

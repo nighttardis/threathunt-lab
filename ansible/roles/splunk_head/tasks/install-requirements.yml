@@ -13,6 +13,7 @@
       - mysql-server
       - redis-server
       - python3-pip
+      - acl
 
 - name: Download yq
   become: yes

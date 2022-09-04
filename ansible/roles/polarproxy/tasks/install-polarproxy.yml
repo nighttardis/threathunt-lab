@@ -23,7 +23,7 @@
   become: yes
   copy:
     src: PolarProxy.service
-    dst: /etc/systemd/system/PolarProxy.service
+    dest: /etc/systemd/system/PolarProxy.service
 
 - name: start service
   become: yes
