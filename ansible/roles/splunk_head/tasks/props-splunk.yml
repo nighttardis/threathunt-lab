@@ -1,0 +1,9 @@
+---
+
+- name: copy props.conf
+  copy:
+    src: props.conf
+    dest: /opt/splunk/etc/system/local/props.conf
+    owner: splunk
+    group: splunk
+  notify: restart splunk

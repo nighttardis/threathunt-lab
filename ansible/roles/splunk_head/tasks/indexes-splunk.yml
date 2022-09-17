@@ -1,0 +1,9 @@
+---
+
+- name: copy indexes.conf
+  copy:
+    src: indexes.conf
+    dest: /opt/splunk/etc/apps/search/local/indexes.conf
+    owner: splunk
+    group: splunk
+  notify: restart splunk

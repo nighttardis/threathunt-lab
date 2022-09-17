@@ -1,0 +1,9 @@
+---
+
+- name: copy transforms.conf
+  copy:
+    src: transforms.conf
+    dest: /opt/splunk/etc/system/local/transforms.conf
+    owner: splunk
+    group: splunk
+  notify: restart splunk
