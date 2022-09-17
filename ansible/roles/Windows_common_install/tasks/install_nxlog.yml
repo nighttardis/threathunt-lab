@@ -1,0 +1,6 @@
+---
+
+- name: Install NXLog on Windows
+  win_package:
+    path: "{{ nxlog_windows_url }}"
+    state: present

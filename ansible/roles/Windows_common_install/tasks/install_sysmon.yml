@@ -1,0 +1,23 @@
+---
+
+- name: (Windows) Create installation directory
+  win_file:
+    path: "{{ sysmon_install_path }}"
+    state: directory
+
+- name: (Windows) Download Sysmon
+  win_get_url:
+    url: "https://download.sysinternals.com/files/Sysmon.zip"
+    dest: "{{ sysmon_install_path }}\\Sysmon.zip"
+
+
+- name: (Windows) Unzip Sysmon
+  community.windows.win_unzip:
+    src: "{{ sysmon_install_path }}\\Sysmon.zip"
+    dest: "{{ sysmon_install_path }}\\"
+    delete_archive: true
+
+- name: (Windows) Install sysmon64
+  ansible.windows.win_command: sysmon64 -i -accepteula
+  args:
+    chdir: "{{ sysmon_install_path }}"
