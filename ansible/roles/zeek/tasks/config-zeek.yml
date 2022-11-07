@@ -1,27 +1,36 @@
 ---
 
-- name: add sniff interface
-  become: yes
-  copy:
+- name: Add sniff interface
+  become: true
+  ansible.builtin.copy:
     src: 49-sniff
     dst: /etc/network/interfaces.d/49-sniff
+    owner: root
+    group: root
+    mode: 0644
 
-- name: copy node config
-  become: yes
-  copy:
+- name: Copy node config
+  become: true
+  ansible.builtin.copy:
     src: node.cfg
     dst: /opt/zeek/etc/node.cfg
+    owner: root
+    group: root
+    mode: 0644
 
-- name: copy zeek service
-  become: yes
-  copy:
+- name: Copy zeek service
+  become: true
+  ansible.builtin.copy:
     src: zeek.service
     dst: /etc/systemd/system/zeek.service
+    owner: root
+    group: root
+    mode: 0644
 
-- name: set logs to json
-  become: yes
-  blockinfile:
+- name: Set logs to json
+  become: true
+  ansible.builtin.blockinfile:
     path: /opt/zeek/share/zeek/site/local.zeek
     insertafter: EOF
-    create: yes
+    create: true
     block: "@load tuning/json-logs"

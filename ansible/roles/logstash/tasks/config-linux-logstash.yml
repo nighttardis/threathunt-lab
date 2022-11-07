@@ -1,6 +1,7 @@
 ---
 
-- Name: Deploy config
+- name: Deploy config
+  become: true
   ansible.builtin.copy:
     src: {{ item }}
     dest: "/etc/logstash/conf.d/{{ item }}"
@@ -12,7 +13,8 @@
     - 20-output-tcp.conf
   notify: Restart Logstash
 
-- Name: Configure service
+- name: Configure service
+  become: true
   ansible.builtin.systemd:
     name: logstash
     state: started

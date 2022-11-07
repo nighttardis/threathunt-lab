@@ -1,13 +1,13 @@
 ---
 
-- Name: Install iptables
-  become: yes
+- name: Install iptables
+  become: true
   ansible.builtin.apt:
     name: iptables
     state: present
-  
-- Name: Masquerade eth1-ens18
-  become: yes
+
+- name: Masquerade eth1-ens18
+  become: true
   ansible.builtin.iptables:
     chain: POSTROUTING
     table: nat
@@ -15,8 +15,8 @@
     out_interface: ens18
     jump: MASQUERADE
 
-- Name: HTTPS Forwarding to Polarproxy
-  become: yes
+- name: HTTPS Forwarding to Polarproxy
+  become: true
   ansible.builtin.iptables:
     chain: PREROUTING
     table: nat
@@ -28,15 +28,15 @@
     match:
       - tcp
 
-- Name: Accept eth1
-  become: yes
+- name: Accept eth1
+  become: true
   ansible.builtin.iptables:
     table: INPUT
     in_interface: eth1
     jump: ACCEPT
 
-- Name: Accept ens18
-  become: yes
+- name: Accept ens18
+  become: true
   ansible.builtin.iptables:
     table: INPUT
     in_interface: ens18
@@ -45,8 +45,8 @@
       - ESTABLISHED
     jump: ACCEPT
 
-- Name: Accept Output
-  become: yes
+- name: Accept Output
+  become: true
   ansible.builtin.iptables:
     table: OUTPUT
     jump: ACCEPT

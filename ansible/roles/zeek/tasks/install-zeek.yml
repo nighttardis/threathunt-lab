@@ -1,20 +1,32 @@
 ---
 
 - name: Deploy Zeek repo
-  become: yes
-  copy:
+  become: true
+  ansible.builtin.copy:
     src: zeek.list
     dest: /etc/apt/sources.list.d/zeek.list
 
 - name: Add Zeek Key
-  become: yes
-  apt_key:
+  become: true
+  ansible.builtin.apt_key:
     url: https://download.opensuse.org/repositories/security:zeek/Debian_11/Release.key
     state: present
 
 - name: Install Zeek
-  become: yes
-  apt:
+  become: true
+  ansible.builtin.apt:
     name: zeek
-    update_cache: yes
+    update_cache: true
     state: present
+  register: zeek_update
+
+- name: Install cmake
+  become: true
+  ansible.builtin.apt:
+    name: cmake
+    state: present
+
+- name: Install HTTP/2.0 Parser
+  become: true
+  ansible.builtin.shell: /opt/zeek/bin/zkg install zeek/mitrecnd/bro-http2
+  when: zeek_update.changed

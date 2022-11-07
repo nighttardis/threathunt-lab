@@ -1,10 +1,10 @@
 ---
-- Name: Setup DHCPD
+- name: Setup DHCPD
   ansible.builtin.include_tasks: setup-dhcpd.yml
   when: setup_gatewas == "1"
-- Name: Setup iptables
+- name: Setup iptables
   ansible.builtin.include_tasks: setup-iptables.yml
   when: setup_gatewas == "1"
-- Name: Setup IP Forwarding
+- name: Setup IP Forwarding
   ansible.builtin.include_tasks: setup-ip-forwarding.yml
   when: setup_gatewas == "1"
