@@ -1,0 +1,31 @@
+{{ ansible_managed | comment('yml') }}
+
+winlogbeat.event_logs:
+  - name: Application
+    ignore_older: 72h
+  
+  - name: System
+    ignore_older: 72h
+
+  - name: Security
+    ignore_older: 72h
+
+  - name: Microsoft-Windows-Sysmon/Operational
+    ignore_older: 72h
+
+  - name: Microsoft-Windows-PowerShell/Operational
+    ignore_older: 72h
+
+  - name: Windows PowerShell
+    ignore_older: 72h
+
+  - name: Microsoft-Windows-Windows Defender/Operational
+    ignore_older: 72h
+
+output.logstash:
+  hosts: ["{{ logstash_host }}:{{ logstash_port }}"]
+
+processors:
+  - add_host_metadata:
+      when.not.contains.tags: forwarded
+  - add_cloud_metadata: ~

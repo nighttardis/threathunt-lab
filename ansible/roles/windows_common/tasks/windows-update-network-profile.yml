@@ -1,0 +1,5 @@
+---
+
+- name: Set network to private
+  ansible.windows.win_powershell:
+    script: Set-NetConnectionProfile -InterfaceAlias (Get-NetConnectionProfile -IPv4Connectivity Internet).InterfaceAlias -NetworkCategory Private

@@ -1,0 +1,6 @@
+---
+
+- name: Install NXLog on Windows
+  ansible.windows.win_package:
+    path: "{{ win_nxlog_url }}"
+    state: present

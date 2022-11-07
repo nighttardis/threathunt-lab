@@ -1,0 +1,5 @@
+---
+
+- name: Install Windows Sysinternal
+  ansible.builtin.include_tasks: windows-sysinternals.yml
+  when: win_install_sysinternals == '1'

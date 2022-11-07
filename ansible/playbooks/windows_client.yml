@@ -1,0 +1,11 @@
+- name: WindowsClient
+  hosts: all
+  gather_facts: true
+  vars:
+    ansible_connection: winrm
+    ansible_winrm_server_cert_validation: ignore
+  roles:
+    - windows_common
+    - sysmon
+    - sysinternals
+    - winlogbeat

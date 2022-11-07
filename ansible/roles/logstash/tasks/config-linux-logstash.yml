@@ -1,0 +1,19 @@
+---
+
+- Name: Deploy config
+  ansible.builtin.copy:
+    src: {{ item }}
+    dest: "/etc/logstash/conf.d/{{ item }}"
+    owner: root
+    group: root
+    mode: 0644
+  with_items:
+    - 01-input-beats.conf
+    - 20-output-tcp.conf
+  notify: Restart Logstash
+
+- Name: Configure service
+  ansible.builtin.systemd:
+    name: logstash
+    state: started
+    enabled: yes

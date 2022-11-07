@@ -1,0 +1,6 @@
+- name: Copy WinLogBeat configuration.
+  ansible.windows.win_template:
+    src: winlogbeat.yml.j2
+    dest: "{{ winlogbeat_install_location }}/{{ winlogbeat_download_file }}/winlogbeat.yml"
+  notify: Restart Windows Winlogbeat
+  when: winlogbeat_logstash == '1'

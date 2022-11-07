@@ -1,0 +1,6 @@
+---
+
+- name: Restart Windows NXLog
+  ansible.windows.win_service:
+    name: nxlog
+    state: restarted

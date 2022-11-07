@@ -1,0 +1,21 @@
+---
+
+- Name: Add Elastic Cert
+  become: yes
+  ansible.builtin.apt_key:
+    url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    state: present
+
+- Name: Add Elastic Repo
+  become: yes
+  ansible.builtin.apt_repository:
+    repo: deb https://artifacts.elastic.co/packages/8.x/apt stable main
+    state: present
+    filename: elastic-8.x.list
+
+- name: Install Logstash-OSS
+  become: yes
+  apt:
+    name: logstash-oss
+    update_cache: yes
+    state: present

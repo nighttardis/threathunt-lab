@@ -1,0 +1,7 @@
+---
+
+- Name: Restart DHCPD
+  ansible.builtin.systemd:
+    name: isc-dhcp-server
+    state: restarted
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'

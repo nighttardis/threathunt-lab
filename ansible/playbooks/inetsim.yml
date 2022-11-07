@@ -8,4 +8,5 @@
     - polarproxy
     - tcpreplay
     - zeek
+    - gateway
     - reboot

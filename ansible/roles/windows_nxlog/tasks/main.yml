@@ -1,1 +1,8 @@
-- include_tasks: config_nxlog.yml
+---
+
+- name: Install Windows NXLog
+  ansible.builtin.include_tasks: windows-install-nxlog.yml
+  when: '"Windows" in ansible_distribution and win_install_nxlog == "1"'
+- name: Configure Windows NXLog
+  ansible.builtin.include_tasks: windows-config-nxlog.yml
+  when: '"Windows" in ansible_distribution'

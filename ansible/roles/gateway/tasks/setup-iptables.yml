@@ -1,0 +1,52 @@
+---
+
+- Name: Install iptables
+  become: yes
+  ansible.builtin.apt:
+    name: iptables
+    state: present
+  
+- Name: Masquerade eth1-ens18
+  become: yes
+  ansible.builtin.iptables:
+    chain: POSTROUTING
+    table: nat
+    in_interface: eth1
+    out_interface: ens18
+    jump: MASQUERADE
+
+- Name: HTTPS Forwarding to Polarproxy
+  become: yes
+  ansible.builtin.iptables:
+    chain: PREROUTING
+    table: nat
+    in_interface: eth1
+    protocol: tcp
+    to_ports: 443
+    jump: REDIRECT
+    destination_port: 443
+    match:
+      - tcp
+
+- Name: Accept eth1
+  become: yes
+  ansible.builtin.iptables:
+    table: INPUT
+    in_interface: eth1
+    jump: ACCEPT
+
+- Name: Accept ens18
+  become: yes
+  ansible.builtin.iptables:
+    table: INPUT
+    in_interface: ens18
+    ctstate:
+      - RELATED
+      - ESTABLISHED
+    jump: ACCEPT
+
+- Name: Accept Output
+  become: yes
+  ansible.builtin.iptables:
+    table: OUTPUT
+    jump: ACCEPT

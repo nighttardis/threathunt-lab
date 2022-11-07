@@ -1,0 +1,8 @@
+---
+
+- name: Install Winlogbeat
+  ansible.builtin.include_tasks: windows-install-winlogbeat.yml
+  when: '"Windows" in ansible_distribution and win_install_winlogbeat == "1"'
+- name: Configure Winlogbeat
+  ansible.builtin.include_tasks: windows-config-winlogbeat.yml
+

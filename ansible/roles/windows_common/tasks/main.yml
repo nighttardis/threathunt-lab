@@ -1,0 +1,16 @@
+---
+
+- name: Set Timezone
+  ansible.builtin.include_tasks: windows-set-timezone.yml
+- name: Update Password Policy
+  ansible.builtin.include_tasks: windows-password-policy.yml
+- name: Enable PS Logging
+  ansible.builtin.include_tasks: windows-enable-ps-logging.yml
+- name: Configure Security Logging
+  ansible.builtin.include_tasks: windows-security-configure-logging.yml
+- name: Enable cmd line audit
+  ansible.builtin.include_tasks: windows-enable-4688-cmd-line-audit.yml
+- name: Update Network Profile
+  ansible.builtin.include_tasks: windows-update-network-profile.yml
+- name: Configure ProxySettingsPerUser
+  ansible.builtin.include_tasks: windows-configure-proxy.yml

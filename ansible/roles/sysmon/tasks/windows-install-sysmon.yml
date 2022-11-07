@@ -1,0 +1,33 @@
+---
+
+- name: Install sysmon
+  block:
+    - name: Check if sysmon archive is present
+      ansible.windows.win_stat:
+        path: c:\Program Files\ansible\sysmon
+      register: sysmondl
+
+    - name: Create sysmon directory
+      ansible.windows.win_file:
+        path: c:\Program Files\ansible\sysmon
+        state: directory
+      when: not sysmondl.stat.exists
+
+    - name: Download sysmon
+      ansible.windows.win_get_url:
+        url: "{{ win_sysmon_url }}"
+        dest: 'c:\Program Files\ansible\{{ win_sysmon_url | basename }}'
+        timeout: 60
+      when: not sysmondl.stat.exists
+
+    - name: Unzip sysmon
+      community.windows.win_unzip:
+        src: 'c:\Program Files\ansible\{{ win_sysmon_url | basename }}'
+        dest: 'c:\Program Files\ansible\sysmon'
+        creates: 'c:\Program Files\ansible\sysmon\sysmon.exe'
+      when: not sysmondl.stat.exists
+
+    - name: Add sysmon to PATH
+      ansible.windows.win_path:
+        elements: 'c:\Program Files\ansible\sysmon'
+      when: not sysmondl.stat.exists

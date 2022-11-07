@@ -1,0 +1,8 @@
+---
+
+- Name: Install Logstash
+  ansible.builtin.include_tasks: install-linux-logstash.yml
+  when: install_logstash == '1' and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+- Name: Configure Logstash
+  ansible.builtin.include_tasks: config-linux-logstash.yml
+  when: install_logstash == '1' and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')

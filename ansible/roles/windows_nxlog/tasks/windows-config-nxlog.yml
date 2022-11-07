@@ -1,0 +1,32 @@
+---
+
+- name: Copy a new confs file into the NXLog default config directory
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: C:\Program Files\nxlog\conf\nxlog.d\{{ item }}
+    owner: nxlog
+    group: nxlog
+    mode: '750'
+  with_items:
+    - 00-extensions.conf
+    - 01-outputs.conf
+    - 02-inputs-defender.conf
+    - 02-inputs-powershell.conf
+    - 02-inputs-security.conf
+    - 02-inputs-sysmon.conf
+  notify:
+    - Restart Windows NXLog
+
+- name: Update NXLog.conf
+  community.windows.win_lineinfile:
+    path: C:\Program Files\nxlog\conf\nxlog.conf
+    line: "include %CONFDIR%\\{{ item }}"
+  with_items:
+    - 00-extensions.conf
+    - 01-outputs.conf
+    - 02-inputs-defender.conf
+    - 02-inputs-powershell.conf
+    - 02-inputs-security.conf
+    - 02-inputs-sysmon.conf
+  notify:
+    - Restart Windows NXLog

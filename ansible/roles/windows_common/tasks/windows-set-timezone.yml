@@ -1,0 +1,5 @@
+---
+
+- name: Set Timezone to UTC
+  community.windows.win_timezone:
+    timezone: UTC

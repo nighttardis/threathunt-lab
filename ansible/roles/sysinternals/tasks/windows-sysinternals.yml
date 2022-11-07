@@ -1,0 +1,27 @@
+---
+
+- name: Install sysinternal tools
+  block:
+    - name: Check if sysinternal archive is present
+      ansible.windows.win_stat:
+        path: c:\tools\sysinternal
+      register: sysinternaldl
+
+    - name: Create sysinternal directory
+      ansible.windows.win_file:
+        path: c:\tools\sysinternal
+        state: directory
+      when: not sysinternaldl.stat.exists
+
+    - name: Download sysinternal
+      ansible.windows.win_get_url:
+        url: "{{ win_sysinternal_url }}"
+        dest: 'c:\tools\sysinternal\{{ win_sysinternal_url | basename }}'
+        timeout: 60
+      when: not sysinternaldl.stat.exists
+
+    - name: Unzip sysinternal
+      community.windows.win_unzip:
+        src: 'c:\tools\sysinternal\{{ win_sysinternal_url | basename }}'
+        dest: 'c:\tools\sysinternal'
+      when: not sysinternaldl.stat.exists

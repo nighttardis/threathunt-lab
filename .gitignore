@@ -7,3 +7,4 @@ credentials.auto.tfvars
 vm_vars.auto.tfvars
 ansible/ansible-venv
 *.iso
+venv

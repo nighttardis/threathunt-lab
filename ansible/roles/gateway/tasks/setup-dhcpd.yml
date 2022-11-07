@@ -1,0 +1,22 @@
+---
+- Name: Install dhcpd
+  become: yes
+  ansible.builtin.apt:
+    name: isc-dhcp-server
+    state: present
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- Name: Configure dhcpd
+  become: yes
+  ansible.builtin.copy:
+    src: dhcpd.conf
+    dst: /etc/dhcp/dhcpd.conf
+  notify: Restart DHCPD
+
+- Name: DHCPD Service running
+  become: yes
+  ansible.builtin.systemd:
+    name: isc-dhcp-server
+    state: started
+    enabled: yes
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
