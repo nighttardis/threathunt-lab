@@ -5,3 +5,8 @@ isolated_network_bridge = "vmbr1"
 public_network_bridge = "vmbr0"
 splunk_url = "https://download.splunk.com/products/splunk/releases/9.0.1/linux"
 splunk_binary = "splunk-9.0.1-82c987350fde-Linux-x86_64.tgz"
+# Vars for inestsim/gateway host
+inetsiem_hostname = "0"      # change hostname to random hostname
+inetsiem_inetsim = "0"       # Setup inetsim on host
+inetsiem_polar_proxy = "1"   # Setup polar proxy on host
+inetsiem_setup_gateway = "1" # Set host up as a gateway

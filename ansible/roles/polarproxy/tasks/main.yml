@@ -1,0 +1,5 @@
+---
+
+- name: Install PolarProxy
+  ansible.builtin.include_tasks: install-polarproxy.yml
+  when: polar_proxy == "1"

@@ -1,6 +1,6 @@
 ---
 
 - name: Change Hostname
-  become: yes
-  hostname:
+  become: true
+  ansible.builtin.hostname:
     name: "{{ hostname }}-{{ 9999 | random }}"

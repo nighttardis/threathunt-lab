@@ -1,0 +1,5 @@
+---
+
+- name: Up interface
+  become: true
+  ansible.builtin.shell: ip link set decrypted up

@@ -4,7 +4,7 @@
   become: true
   ansible.builtin.copy:
     src: 49-sniff
-    dst: /etc/network/interfaces.d/49-sniff
+    dest: /etc/network/interfaces.d/49-sniff
     owner: root
     group: root
     mode: 0644
@@ -13,7 +13,7 @@
   become: true
   ansible.builtin.copy:
     src: node.cfg
-    dst: /opt/zeek/etc/node.cfg
+    dest: /opt/zeek/etc/node.cfg
     owner: root
     group: root
     mode: 0644
@@ -22,7 +22,7 @@
   become: true
   ansible.builtin.copy:
     src: zeek.service
-    dst: /etc/systemd/system/zeek.service
+    dest: /etc/systemd/system/zeek.service
     owner: root
     group: root
     mode: 0644
@@ -34,3 +34,10 @@
     insertafter: EOF
     create: true
     block: "@load tuning/json-logs"
+
+- name: Start Zeek service
+  become: true
+  ansible.builtin.systemd:
+    name: zeek
+    enabled: true
+    daemon_reload: true

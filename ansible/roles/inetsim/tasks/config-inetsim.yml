@@ -1,24 +1,23 @@
 ---
 
 - name: Update Bind Address
-  become: yes
-  replace:
+  become: true
+  ansible.builtin.replace:
     path: /etc/inetsim/inetsim.conf
     regexp: "^#service_bind_address.*"
     replace: "service_bind_address 10.0.1.2"
 
 - name: Disable HTTPS Service
-  become: yes
-  replace:
+  become: true
+  ansible.builtin.replace:
     path: /etc/inetsim/inetsim.conf
     regexp: "^start_service https"
     replace: "#start_service https"
   when: polar_proxy == "1"
 
 - name: Start Service
-  become: yes
-  systemd:
+  become: true
+  ansible.builtin.systemd:
     name: inetsim
     state: started
-    enabled: yes
-
+    enabled: true

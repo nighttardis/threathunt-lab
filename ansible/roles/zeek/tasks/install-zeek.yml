@@ -1,5 +1,15 @@
 ---
 
+- name: Install requirements
+  become: true
+  ansible.builtin.apt:
+    name:
+      - cmake
+      - gnupg2
+      - libnghttp2-dev
+      - libbrotli-dev
+    state: present
+
 - name: Deploy Zeek repo
   become: true
   ansible.builtin.copy:
@@ -20,13 +30,7 @@
     state: present
   register: zeek_update
 
-- name: Install cmake
-  become: true
-  ansible.builtin.apt:
-    name: cmake
-    state: present
-
 - name: Install HTTP/2.0 Parser
   become: true
-  ansible.builtin.shell: /opt/zeek/bin/zkg install zeek/mitrecnd/bro-http2
+  ansible.builtin.shell: /opt/zeek/bin/zkg install --force zeek/mitrecnd/bro-http2
   when: zeek_update.changed

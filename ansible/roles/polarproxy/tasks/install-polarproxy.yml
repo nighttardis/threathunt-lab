@@ -1,34 +1,48 @@
 ---
 
-- name: download polarproxy
-  get_url:
+- name: Download polarproxy
+  ansible.builtin.get_url:
     url: https://www.netresec.com/?download=PolarProxy
     dest: /tmp/PolarProxy.tar.gz
 
-- name: install polarproxy
-  become: yes
-  unarchive:
+- name: Create Dir for PolarProxy
+  become: true
+  ansible.builtin.file:
+    path: /usr/local/bin/PolarProxy
+    state: directory
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Install PolarProxy
+  become: true
+  ansible.builtin.unarchive:
     remote_src: yes
     src: /tmp/PolarProxy.tar.gz
     dest: /usr/local/bin/PolarProxy
-    creates: yes
 
-- name: create log dir for polarproxy
-  become: yes
-  file:
+- name: Create log dir for polarproxy
+  become: true
+  ansible.builtin.file:
     path: /var/log/PolarProxy
     state: directory
+    owner: root
+    group: root
+    mode: 0644
 
-- name: add service file for polaryproxy
-  become: yes
-  copy:
+- name: Add service file for polaryproxy
+  become: true
+  ansible.builtin.copy:
     src: PolarProxy.service
     dest: /etc/systemd/system/PolarProxy.service
+    owner: root
+    group: root
+    mode: 0644
 
-- name: start service
-  become: yes
-  systemd:
+- name: Start service
+  become: true
+  ansible.builtin.systemd:
     name: PolarProxy
     state: started
-    enabled: yes
-    daemon_reload: yes
+    enabled: true
+    daemon_reload: true

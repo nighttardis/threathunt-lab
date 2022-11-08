@@ -1,3 +1,9 @@
 ---
-- include_tasks: install-inetsim.yml
-- include_tasks: config-inetsim.yml
+
+- name: Install InetSim
+  ansible.builtin.include_tasks: install-inetsim.yml
+  when: inetsim == "1"
+
+- name: Configure InetSim
+  ansible.builtin.include_tasks: config-inetsim.yml
+  when: inetsim == "1"

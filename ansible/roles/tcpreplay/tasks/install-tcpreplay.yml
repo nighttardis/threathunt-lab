@@ -1,27 +1,32 @@
 ---
 
-- name: install tcpreplay
-  become: yes
-  apt:
+- name: Install tcpreplay
+  become: true
+  ansible.builtin.apt:
     name: tcpreplay
     state: present
 
-- name: add decrypted interface
-  become: yes
-  copy:
+- name: Add decrypted interface
+  become: true
+  ansible.builtin.copy:
     src: 50-decrypted
     dest: /etc/network/interfaces.d/50-decrypted
+    owner: root
+    group: root
+    mode: 0644
 
-- name: copy tcpreplay service
-  become: yes
-  copy:
+- name: Copy tcpreplay service
+  become: true
+  ansible.builtin.copy:
     src: tcpreplay.service
     dest: /etc/systemd/system/tcpreplay.service
+    owner: root
+    group: root
+    mode: 0644
 
-- name: start tcpreplay service
-  become: yes
-  systemd:
+- name: Start tcpreplay service
+  become: true
+  ansible.builtin.systemd:
     name: tcpreplay
-    state: started
     enabled: yes
     daemon_reload: yes

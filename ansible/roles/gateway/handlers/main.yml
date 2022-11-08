@@ -5,3 +5,7 @@
     name: isc-dhcp-server
     state: restarted
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: Save iptables
+  ansible.builtin.shell: iptables-save > /etc/iptables/rules.v4
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'

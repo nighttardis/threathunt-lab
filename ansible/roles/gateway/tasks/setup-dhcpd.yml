@@ -10,10 +10,18 @@
   become: true
   ansible.builtin.copy:
     src: dhcpd.conf
-    dst: /etc/dhcp/dhcpd.conf
+    dest: /etc/dhcp/dhcpd.conf
     owner: root
     group: root
     mode: 0640
+  notify: Restart DHCPD
+
+- name: Set dhcpd interface
+  become: true
+  ansible.builtin.replace:
+    path: /etc/default/isc-dhcp-server
+    regexp: "INTERFACESv4=\"\""
+    replace: "INTERFACESv4=\"eth1\""
   notify: Restart DHCPD
 
 - name: DHCPD Service running

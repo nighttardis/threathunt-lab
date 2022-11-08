@@ -82,7 +82,7 @@ resource "proxmox_vm_qemu" "debian-inetsim" {
 
     lifecycle {
         ignore_changes = [
-            network, qemu_os, disk_gb, desc
+            network, qemu_os, desc
         ]
     }
 
@@ -254,7 +254,7 @@ resource "proxmox_vm_qemu" "debian-inetsim" {
 
     provisioner "local-exec" {
         working_dir = "../ansible"
-        command = "ansible-venv/bin/ansible-playbook -u packer --private-key ~/.ssh/packer -i '${self.ssh_host},' playbooks/inetsim.yml"
+        command = "ansible-venv/bin/ansible-playbook -u packer --private-key ~/.ssh/packer -i '${self.ssh_host},' --extra-vars 'set_hostname=${var.inetsiem_hostname} inetsim=${var.inetsiem_inetsim} polar_proxy=${var.inetsiem_polar_proxy} setup_gateway=${var.inetsiem_setup_gateway}' playbooks/inetsim.yml"
     }
 
     provisioner "local-exec" {

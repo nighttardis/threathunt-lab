@@ -1,3 +1,5 @@
 ---
-- include_tasks: set-hostname.yml
+
+- name: Set Hostname
+  ansible.builtin.include_tasks: set-hostname.yml
   when: set_hostname == "1"
