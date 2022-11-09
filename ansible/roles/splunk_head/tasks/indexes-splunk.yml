@@ -1,7 +1,16 @@
 ---
 
-- name: copy indexes.conf
-  copy:
+- name: Make index directory
+  become: true
+  ansible.builtin.file:
+    name: /opt/splunk/etc/apps/search/local
+    state: directory
+    owner: splunk
+    group: splunk
+
+- name: Copy indexes.conf
+  become: true
+  ansible.builtin.copy:
     src: indexes.conf
     dest: /opt/splunk/etc/apps/search/local/indexes.conf
     owner: splunk

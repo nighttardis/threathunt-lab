@@ -1,3 +1,5 @@
-- [ ] Zeek Needs http/2 support
+- [x] Zeek Needs http/2 support
     * https://github.com/MITRECND/bro-http2
     * also requires cmake
+- [ ] Verify Sysmon
+- [ ] Fix Logstash configs

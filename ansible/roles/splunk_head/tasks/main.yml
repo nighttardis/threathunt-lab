@@ -3,5 +3,5 @@
 - include_tasks: setup-storage.yml
 - include_tasks: install-splunk.yml
 - include_tasks: inputs-splunk.yml
-- include_tasks: prosp-splunk.yml
+- include_tasks: props-splunk.yml
 - include_tasks: indexes-splunk.yml

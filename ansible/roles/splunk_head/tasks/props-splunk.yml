@@ -1,7 +1,8 @@
 ---
 
-- name: copy props.conf
-  copy:
+- name: Copy props.conf
+  become: true
+  ansible.builtin.copy:
     src: props.conf
     dest: /opt/splunk/etc/system/local/props.conf
     owner: splunk

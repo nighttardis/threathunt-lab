@@ -1,0 +1,9 @@
+[tcp://1514]
+sourcetype = winlogbeat
+index = win
+
+[http://logstash]
+disabled = 0
+index = win
+sourcetype = winlogbeat
+token = {{ (hostname + 'winlogbeat') | to_uuid }}

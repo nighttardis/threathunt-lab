@@ -34,6 +34,22 @@ variable "splunk_url" {
     type = string
 }
 
+variable "inetsiem_hostname" {
+    type = string
+}
+
+variable "inetsiem_inetsim" {
+  type = string
+}
+
+variable "inetsiem_polar_proxy" {
+  type = string
+}
+
+variable "inetsiem_setup_gateway" {
+  type = string
+}
+
 ### Uncomment this for vault
 # variable "splunk_admin_password" {
 #    type = string
@@ -337,7 +353,7 @@ resource "proxmox_vm_qemu" "ubuntu-logger" {
 
     provisioner "local-exec" {
         working_dir = "../ansible"
-        command = "ansible-venv/bin/ansible-playbook -u packer --private-key ~/.ssh/packer -i '${self.ssh_host},' playbooks/logger.yml -e 'splunk_url=${var.splunk_url} splunk_binary=${var.splunk_binary} splunk_admin_password=${data.vault_generic_secret.splunk.data[var.splunk_admin_password]} set_hostname=0'"
+        command = "ansible-venv/bin/ansible-playbook -u packer --private-key ~/.ssh/packer -i '${self.ssh_host},' playbooks/logger.yml -e 'splunk_url=${var.splunk_url} splunk_binary=${var.splunk_binary} splunk_admin_password=${data.vault_generic_secret.splunk.data[var.splunk_admin_password]} set_hostname=0 install_logstash=1'"
     }
 
     provisioner "local-exec" {

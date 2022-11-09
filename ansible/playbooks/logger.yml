@@ -1,7 +1,8 @@
 - hosts: all
-  gather_facts: False
+  gather_facts: true
   vars:
     hostname: logger
   roles:
     - linux_common
     - splunk_head
+    - logstash

@@ -3,14 +3,23 @@
 - name: Deploy config
   become: true
   ansible.builtin.copy:
-    src: {{ item }}
+    src: "{{ item }}"
     dest: "/etc/logstash/conf.d/{{ item }}"
     owner: root
     group: root
     mode: 0644
   with_items:
     - 01-input-beats.conf
-    - 20-output-tcp.conf
+  notify: Restart Logstash
+
+- name: Deploy template config
+  become: true
+  ansible.builtin.template:
+    src: 20-output-tcp.conf.j2
+    dest: /etc/logstash/conf.d/20-output-tcp.conf
+    owner: root
+    group: root
+    mode: 0644
   notify: Restart Logstash
 
 - name: Configure service

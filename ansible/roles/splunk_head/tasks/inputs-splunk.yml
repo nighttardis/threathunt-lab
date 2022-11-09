@@ -1,7 +1,8 @@
 ---
 
 - name: Create folder directory for inputs configuration
-  file:
+  become: true
+  ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     owner: splunk
@@ -10,9 +11,10 @@
   with_items:
     - /opt/splunk/etc/apps/inputs_app/local/
 
-- name: copy inputs.conf
-  copy:
-    src: inputs.conf
+- name: Copy inputs.conf
+  become: true
+  ansible.builtin.template:
+    src: inputs.conf.j2
     dest: /opt/splunk/etc/apps/inputs_app/local/inputs.conf
     owner: splunk
     group: splunk
