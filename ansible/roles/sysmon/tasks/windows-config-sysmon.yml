@@ -1,19 +1,13 @@
 ---
 
-- name: Deploy Symon
-  block:
-    - name: Check if sysmon archive is present
-      ansible.windows.win_stat:
-        path: c:\Program Files\ansible\sysmon
-      register: sysmondl
-    - name: Copy Sysmon template
-      ansible.windows.win_template:
-        src: "{{ win_sysmon_template }}.j2"
-        dest: 'c:\Program Files\ansible\{{ win_sysmon_template }}'
-      register: win_sysmon_template_change
-    - name: Install sysmon with defined config
-      ansible.windows.win_command: '"c:\Program Files\ansible\sysmon\sysmon64.exe" -accepteula -i "c:\Program Files\ansible\{{ win_sysmon_template }}"'
-      when: win_install_sysmon == 1 or not sysmondl.stat.exists
-    - name: Deploy new sysmon config
-      ansible.windows.win_command: '"c:\Program Files\ansible\sysmon\sysmon64.exe" -c "c:\Program Files\ansible\{{ win_sysmon_template }}"'
-      when: (win_install_sysmon == 0 or sysmondl.stat.exists) and win_sysmon_template_change.changed
+- name: Copy Sysmon template
+  ansible.windows.win_template:
+    src: "{{ win_sysmon_template }}.j2"
+    dest: 'c:\Program Files\ansible\{{ win_sysmon_template }}'
+  register: win_sysmon_template_change
+- name: Install sysmon with defined config
+  ansible.windows.win_command: '"c:\Program Files\ansible\sysmon\sysmon64.exe" -accepteula -i "c:\Program Files\ansible\{{ win_sysmon_template }}"'
+  when: win_install_sysmon == "1" and win_sysmon_template_change.changed
+- name: Deploy new sysmon config
+  ansible.windows.win_command: '"c:\Program Files\ansible\sysmon\sysmon64.exe" -c "c:\Program Files\ansible\{{ win_sysmon_template }}"'
+  when: win_install_sysmon == "0" and win_sysmon_template_change.changed

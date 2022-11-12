@@ -7,7 +7,7 @@ SyslogIdentifier=PolarProxy
 Type=simple
 User=root
 WorkingDirectory=/usr/local/bin/PolarProxy
-ExecStart=/usr/local/bin/PolarProxy/PolarProxy -v -p 443,80,80 -x /var/log/PolarProxy/polarproxy.cer -f /var/log/PolarProxy/proxyflows.log --certhttp 10080 --socks 1080 --httpconnect 8080 --allownontls --insecure --terminate --connect 10.0.1.2 -nosni nosni.inetsim.org --pcapoverip 57102
+ExecStart=/usr/local/bin/PolarProxy/PolarProxy -v -p 443,80 -x /var/log/PolarProxy/polarproxy.cer -f /var/log/PolarProxy/proxyflows.log --certhttp 10080 --socks 1080 --httpconnect 8080 --allownontls --pcapoverip 57102
 KillSignal=SIGINT
 FinalKillSignal=SIGTERM
 

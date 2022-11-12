@@ -39,6 +39,15 @@
     group: root
     mode: 0644
 
+- name: Add PolarProxy+Inetsim service file
+  become: true
+  ansible.builtin.copy:
+    src: PolarProxy-inetsim.service
+    dest: /etc/systemd/system/PolarProxy.service
+    owner: root
+    group: root
+    mode: 0644
+
 - name: Start service
   become: true
   ansible.builtin.systemd:

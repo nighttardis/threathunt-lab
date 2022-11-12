@@ -5,12 +5,12 @@
 
 - name: Get winlogbeat zip
   ansible.windows.win_get_url:
-    url: "{{ winlogbeat_download_url_base }}/{{ winlogbeat_download_file }}{{ file_ext }}"
-    dest: "{{ winlogbeat_install_location }}/{{ winlogbeat_download_file }}{{ file_ext }}"
+    url: "{{ winlogbeat_download_url_base }}{{ winlogbeat_download_file }}.{{ file_ext }}"
+    dest: "{{ winlogbeat_install_location }}/{{ winlogbeat_download_file }}.{{ file_ext }}"
 
 - name: Unzip winlogbeat
-  ansible.windows.win_unzip:
-    src: "{{ winlogbeat_install_location }}/{{ winlogbeat_download_file }}{{ file_ext }}"
+  community.windows.win_unzip:
+    src: "{{ winlogbeat_install_location }}/{{ winlogbeat_download_file }}.{{ file_ext }}"
     dest: "{{ winlogbeat_install_location }}"
 
 - name: Install the service via script
