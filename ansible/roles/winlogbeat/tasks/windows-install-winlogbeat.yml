@@ -14,6 +14,6 @@
     dest: "{{ winlogbeat_install_location }}"
 
 - name: Install the service via script
-  ansible.windows.win_command: powershell.exe -ExecutionPolicy ByPass -File "{{ winlogbeat_install_location }}/{{ winlogbeat_download_file }}/install-service-winlogbeat.ps1"
+  ansible.windows.win_command: powershell.exe -ExecutionPolicy ByPass -File "{{ winlogbeat_install_location }}/{{ winlogbeat_download_file | replace('oss-', '')}}/install-service-winlogbeat.ps1"
   args:
-    chdir: "{{ winlogbeat_install_location }}/{{ winlogbeat_download_file }}"
+    chdir: "{{ winlogbeat_install_location }}/{{ winlogbeat_download_file | replace('oss-', '') }}"

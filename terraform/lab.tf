@@ -18,6 +18,10 @@ variable "ubuntu_source" {
     type = string
 }
 
+variable "windows_client_source" {
+    type = string
+}
+
 variable "isolated_network_bridge" {
     type = string
 }
@@ -48,6 +52,90 @@ variable "inetsiem_polar_proxy" {
 
 variable "inetsiem_setup_gateway" {
   type = string
+}
+
+variable "logstash_host" {
+    type = string
+    default = "10.0.1.3"
+    description = "IP of logger's isolated_network interface"
+}
+
+variable "logstash_port" {
+    type = string
+    default = "5044"
+}
+
+variable "winlogbeat_file_ext" {
+    type = string
+    default = "zip"
+}
+
+variable "winlogbeat_download_url_base" {
+    type = string
+    default = "https://artifacts.elastic.co/downloads/beats/winlogbeat/"
+}
+
+variable "winlogbeat_download_file" {
+    type = string
+}
+
+variable "winlogbeat_install_location" {
+    type = string
+    default = "c:\\\\program files\\\\ansible\\\\winlogbeat"
+}
+
+variable "verbose_win_security_logging" {
+    type = string
+}
+
+variable "win_sysmon_url" {
+    type = string
+}
+
+variable "win_install_sysmon" {
+    type = string
+}
+
+variable "win_sysmon_template" {
+    type = string
+}
+
+variable "win_4688_cmd_line" {
+    type = string
+}
+
+variable "win_sysinternal_url" {
+    type = string
+}
+
+variable "win_install_sysinternals" {
+    type = string
+}
+
+variable "win_polarproxy" {
+    type = string
+}
+
+variable "win_polarproxyhost" {
+    type = string
+    default = "10.0.1.2"
+    description = "IP of Debian Inetsiem's isolated_network interface"
+}
+
+variable "win_polarproxycaport" {
+    type = string
+    default = "10080"
+    description = "Port to download polarproxy's CA from"
+}
+
+variable "win_install_winlogbeat" {
+    type = string
+}
+
+variable "winlogbeat_logstash" {
+    type = string
+    default = "1"
+    description = "Configure winlogbeat to foward to logstash"
 }
 
 ### Uncomment this for vault
@@ -327,6 +415,8 @@ resource "proxmox_vm_qemu" "ubuntu-logger" {
         model  = "virtio"
     }
 
+    ipconfig1 = "ip=10.0.1.3/24"
+
     provisioner "remote-exec" {
         inline = [
           "echo \"$(date -Is) booted\"",
@@ -358,6 +448,49 @@ resource "proxmox_vm_qemu" "ubuntu-logger" {
 
     provisioner "local-exec" {
         command = "rm ~/.ssh/packer"
+    }
+
+}
+
+resource "proxmox_vm_qemu" "windows-client" {
+    count=1
+    # VM General Settings
+    target_node = var.proxmox_host
+    vmid = 310 - (count.index)
+    name = "win10-${count.index}"
+
+    # VM Advanced General Settings
+    onboot = false 
+
+    # VM OS Settings
+    clone = var.windows_client_source
+
+    # VM System Settings
+    agent = 1
+    
+    # VM CPU Settings
+    cores = 2
+    sockets = 1
+    cpu = "host"    
+    
+    # VM Memory Settings
+    memory = 2048
+
+    # VM Network Settings
+    network {
+        bridge = var.isolated_network_bridge
+        model  = "e1000"
+    }
+
+    lifecycle {
+        ignore_changes = [
+            network, qemu_os, desc
+        ]
+    }
+    
+    provisioner "local-exec" {
+        working_dir = "../ansible"
+        command = "ansible-venv/bin/ansible-playbook -i '${self.ssh_host},' --extra-vars 'ansible_user=vagrant ansible_password=vagrant verbose_win_security_logging=${var.verbose_win_security_logging} win_sysmon_url=${var.win_sysmon_url} win_install_sysmon=${var.win_install_sysmon} win_sysmon_template=${var.win_sysmon_template} win_4688_cmd_line=${var.win_4688_cmd_line} win_sysinternal_url=${var.win_sysinternal_url} win_install_sysinternals=${var.win_install_sysinternals} polarproxy=${var.win_polarproxy} polarproxyhost=${var.win_polarproxyhost} polarproxycaport=${var.win_polarproxycaport} winlogbeat_download_file=${var.winlogbeat_download_file} logstash_port=${var.logstash_port} logstash_host=${var.logstash_host} file_ext=${var.winlogbeat_file_ext} winlogbeat_download_url_base=${var.winlogbeat_download_url_base} winlogbeat_install_location=\"${var.winlogbeat_install_location}\" win_install_winlogbeat=${var.win_install_winlogbeat} winlogbeat_logstash=${var.winlogbeat_logstash}' playbooks/windows_client.yml"
     }
 
 }
