@@ -1,8 +1,24 @@
 output {
-    http {
-        content_type => "application/json"
-        http_method => "post"
-        url => "http://127.0.0.1:8088/services/collector/raw?host=%{[host][hostname]}&source=%{[winlog][provider_name]}"
-        headers => ["Authorization", "Splunk {{ (hostname + 'winlogbeat') | to_uuid }}"]
+    if [agent][type] == "winlogbeat" {
+        http {
+            content_type => "application/json"
+            http_method => "post"
+            url => "http://127.0.0.1:8088/services/collector/raw?host=%{[host][hostname]}&source=%{[winlog][provider_name]}"
+            headers => ["Authorization", "Splunk {{ (hostname + 'winlogbeat') | to_uuid }}"]
+        }
+    } else if [event][module] == "zeek" {
+        http {
+            content_type => "application/json"
+            http_method => "post"
+            url => "http://127.0.0.1:8088/services/collector/raw?host=%{[host][hostname]}&source=%{[event][dataset]}"
+            headers => ["Authorization", "Splunk {{ (hostname + 'winlogbeat') | to_uuid }}"]
+        }
+    } else {
+        http {
+            content_type => "application/json"
+            http_method => "post"
+            url => "http://127.0.0.1:8088/services/collector/raw?host=%{[host][hostname]}"
+            headers => ["Authorization", "Splunk {{ (hostname + 'winlogbeat') | to_uuid }}"]
+        }
     }
 }
