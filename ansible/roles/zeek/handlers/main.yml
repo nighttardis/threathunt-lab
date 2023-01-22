@@ -7,3 +7,11 @@
 - name: Up interface
   become: true
   ansible.builtin.shell: ip link set ens20 up
+
+- name: Restart Filebeat
+  become: true
+  ansible.builtin.systemd:
+    name: filebeat
+    state: restarted
+    enabled: yes
+    daemon_reload: true

@@ -1,0 +1,5 @@
+---
+
+- name: Install Filebeat
+  ansible.builtin.include_tasks: install-linux-filebeat.yml
+  

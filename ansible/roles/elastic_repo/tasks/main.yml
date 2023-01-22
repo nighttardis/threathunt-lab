@@ -1,0 +1,5 @@
+---
+
+- name: Setup APT Elastic Repo
+  ansible.builtin.include_tasks: apt_based.yml
+  when: (elastic_oss == '1' or elastic_non_oss == '1') and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')

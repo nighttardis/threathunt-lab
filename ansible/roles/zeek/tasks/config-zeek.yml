@@ -51,3 +51,19 @@
     name: zeek
     enabled: true
     daemon_reload: true
+
+- name: Setup Filebeat
+  become: true
+  ansible.builtin.shell: filebeat modules enable zeek
+  notify: Restart Filebeat
+  when: zeek_filebeat=='1'
+
+- name: Zeek Filebeat Configure
+  ansible.builtin.copy:
+    src: filebeat/zeek.yml
+    dest: /etc/filebeat/modules.d/zeek.yml
+    owner: root
+    group: root
+    mode: 0644
+  notify: Restart Filebeat
+  when: zeek_filebeat=='1'

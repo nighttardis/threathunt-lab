@@ -5,4 +5,5 @@
   roles:
     - linux_common
     - splunk_head
+    - elastic_repo
     - logstash

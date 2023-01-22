@@ -9,4 +9,6 @@
     - tcpreplay
     - zeek
     - gateway
+    - elastic_repo
+    - filebeat
     - reboot

@@ -3,7 +3,7 @@
 - name: Install iptables
   become: true
   ansible.builtin.apt:
-    name: 
+    name:
       - iptables
       - iptables-persistent
     state: present
