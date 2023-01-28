@@ -1,0 +1,5 @@
+---
+
+- name: Install Docker
+  ansible.builtin.include_tasks: install-linux-docker.yml
+  when: (install_elk == '1' or install_opensearch == '1' or install_docker == '1') and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')

@@ -1,0 +1,109 @@
+---
+
+- name: Setup ELK Network
+  become: true
+  community.docker.docker_network:
+    name: elk
+    state: present
+    attachable: false
+
+- name: Create a new ext4 primary partition
+  become: true
+  community.general.parted:
+    device: /dev/sda
+    number: 1
+    state: present
+    fs_type: ext4
+
+- name: Create ext4 filesytem
+  become: true
+  community.general.filesystem:
+    fstype: ext4
+    dev: /dev/sda1
+
+- name: Update fstab for storage
+  become: true
+  ansible.posix.mount:
+    path: /opt/elasticsearch
+    src: /dev/sda1
+    fstype: ext4
+    state: present
+
+- name: Mount storage
+  become: true
+  ansible.posix.mount:
+    path: /opt/elasticsearch
+    src: /dev/sda1
+    state: mounted
+    fstype: ext4
+
+- name: Setup ELK Volumes (physical system)
+  become: true
+  ansible.builtin.file:
+    state: directory
+    file: "{{ item }}"
+  loop:
+    - /opt/elasticsearch/data
+    - /opt/elasticsearch/config
+
+- name: Setup ELK Volumes (docker)
+  become: true
+  community.docker.docker_volume:
+    volume_name: "{{ item.name }}"
+    driver_options:
+      type: none
+      o: bind
+      device: "{{ item.path }}"
+  loop:
+    - { name: "elasticsearch-config", path: "/opt/elasticsearch/config" }
+    - { name: "elasticsearch-data", path: "/opt/elasticsearch/data" }
+
+- name: Elastic NonOSS Docker
+  community.docker.docker_container:
+    name: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:latest
+    detach: true
+    pull: true
+    restart_policy: unless-stopped
+    networks:
+      -name: elk
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+      - elasticsearch-conf:/usr/share/elasticsearch/config
+    env:
+      node.name: elasticsearch
+      discovery.type: 'single-node'
+      bootstrap.memory_lock: "true"
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+    ports:
+      - 9200:9200
+      - 9300:9300
+    ulimits:
+      - 'memlock:-1:-1'
+      - 'nofile:65536:65536'
+  when: elastic_non_oss == '1'
+
+- name: Elastic NonOSS Docker
+  community.docker.docker_container:
+    name: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:latest
+    detach: true
+    pull: true
+    restart_policy: unless-stopped
+    networks:
+      -name: elk
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+      - elasticsearch-conf:/usr/share/elasticsearch/config
+    env:
+      node.name: elasticsearch
+      discovery.type: 'single-node'
+      bootstrap.memory_lock: "true"
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+    ports:
+      - 9200:9200
+      - 9300:9300
+    ulimits:
+      - 'memlock:-1:-1'
+      - 'nofile:65536:65536'
+  when: elastic_oss == '1'

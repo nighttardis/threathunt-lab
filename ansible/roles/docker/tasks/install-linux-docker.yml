@@ -1,0 +1,41 @@
+---
+
+- name: Install Docker Prerequisites
+  become: true
+  ansible.builtin.apt:
+    state: latest
+    name:
+      - ca-certificates
+      - curl
+      - gnupg2
+      - lsb-release
+
+- name: Add Docker CE key
+  become: true
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: Add Docker Repo
+  become: true
+  apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable"
+    state: present
+    update_cache: yes
+
+- name: Install Docker
+  become: true
+  ansible.builtin.apt:
+    state: latest
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-compose-plugin
+
+- name: Enable Docker service
+  become: true
+  ansible.builtin.systemd:
+    name: docker
+    state: started
+    enabled: yes
