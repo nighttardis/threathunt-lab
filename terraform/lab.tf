@@ -30,6 +30,8 @@ variable "public_network_bridge" {
     type = string
 }
 
+# Splunk things
+
 variable "splunk_binary" {
     type = string
 }
@@ -37,6 +39,14 @@ variable "splunk_binary" {
 variable "splunk_url" {
     type = string
 }
+
+variable "splunk" {
+    type = number
+    default = 0
+    description = "Deploy Splunk"
+}
+
+# INetsim 
 
 variable "inetsiem_hostname" {
     type = string
@@ -54,35 +64,7 @@ variable "inetsiem_setup_gateway" {
   type = string
 }
 
-variable "logstash_host" {
-    type = string
-    default = "10.0.1.3"
-    description = "IP of logger's isolated_network interface"
-}
-
-variable "logstash_port" {
-    type = string
-    default = "5044"
-}
-
-variable "winlogbeat_file_ext" {
-    type = string
-    default = "zip"
-}
-
-variable "winlogbeat_download_url_base" {
-    type = string
-    default = "https://artifacts.elastic.co/downloads/beats/winlogbeat/"
-}
-
-variable "winlogbeat_download_file" {
-    type = string
-}
-
-variable "winlogbeat_install_location" {
-    type = string
-    default = "c:\\\\program files\\\\ansible\\\\winlogbeat"
-}
+# Windows logging options
 
 variable "verbose_win_security_logging" {
     type = string
@@ -112,6 +94,8 @@ variable "win_install_sysinternals" {
     type = string
 }
 
+# Configure polarproxy on the windows machine
+
 variable "win_polarproxy" {
     type = string
 }
@@ -128,14 +112,56 @@ variable "win_polarproxycaport" {
     description = "Port to download polarproxy's CA from"
 }
 
+# Winlogbeat
+
 variable "win_install_winlogbeat" {
     type = string
 }
+
+variable "winlogbeat_file_ext" {
+    type = string
+    default = "zip"
+}
+
+variable "winlogbeat_download_url_base" {
+    type = string
+    default = "https://artifacts.elastic.co/downloads/beats/winlogbeat/"
+}
+
+variable "winlogbeat_download_file" {
+    type = string
+}
+
+variable "winlogbeat_install_location" {
+    type = string
+    default = "c:\\\\program files\\\\ansible\\\\winlogbeat"
+}
+
+# Winlogbeat -- through logstash
 
 variable "winlogbeat_logstash" {
     type = string
     default = "1"
     description = "Configure winlogbeat to foward to logstash"
+}
+
+variable "logstash_host" {
+    type = string
+    default = "10.0.1.3"
+    description = "IP of logger's isolated_network interface"
+}
+
+variable "logstash_port" {
+    type = string
+    default = "5044"
+}
+
+# ELK
+
+variable "elastic" {
+    type = number
+    default = 1
+    description = "Install Elastic"
 }
 
 ### Uncomment this for vault
@@ -242,8 +268,95 @@ resource "proxmox_vm_qemu" "debian-inetsim" {
 
 }
 
-# Logger base from detection lab
-resource "proxmox_vm_qemu" "ubuntu-logger" {
+# Logger base for elk
+resource "proxmox_vm_qemu" "ubuntu-logger-elastic" {
+
+    count = var.elastic == 1 ? 1 : 0
+
+    # VM General Settings
+    target_node = var.proxmox_host
+    vmid = "301"
+    name = "ubuntu-logger"
+
+    # VM Advanced General Settings
+    onboot = false 
+
+    # VM OS Settings
+    clone = var.ubuntu_source
+
+    # VM System Settings
+    agent = 1
+    
+    # VM CPU Settings
+    cores = 2
+    sockets = 1
+    cpu = "host"    
+    
+    # VM Memory Settings
+    memory = 2048
+
+    disk {
+        size = "64G"
+        type = "scsi"
+        storage = "VMs"
+        cache = "writeback"
+        format = "qcow2"
+        discard = "on"
+    }
+
+    # VM Network Settings
+    network {
+        bridge = var.public_network_bridge
+        model  = "virtio"
+    }
+
+    network {
+        bridge = var.isolated_network_bridge
+        model  = "virtio"
+    }
+
+    ipconfig1 = "ip=10.0.1.3/24"
+
+    provisioner "remote-exec" {
+        inline = [
+          "echo \"$(date -Is) booted\"",
+          "sleep 60",
+          "while ! tail -10 /var/log/cloud-init-output.log| grep \"Cloud-init .* finished\"; do echo \"$(date -Is) waiting for cloud-init\"; sleep 2; done"
+        ]
+
+        connection {
+          type = "ssh"
+          user = "packer"
+          host = self.ssh_host
+          private_key = data.vault_generic_secret.packer.data["key"]
+          timeout = "10m"
+        }
+    }
+
+    # provisioner "local-exec" {
+    #     command = "echo '${data.vault_generic_secret.packer.data["key"]}' >> ~/.ssh/packer"
+    # }
+
+    # provisioner "local-exec" {
+    #     command = "chmod 600 ~/.ssh/packer"
+    # }
+
+    provisioner "local-exec" {
+        working_dir = "../ansible"
+        command = "ansible-venv/bin/ansible-playbook -u packer --private-key ~/.ssh/packer -i '${self.ssh_host},' playbooks/logger-elastic.yml -e 'set_hostname=0 elastic_non_oss=1 elastic_oss=0 install_elastic=1'"
+    }
+
+    # provisioner "local-exec" {
+    #     command = "rm ~/.ssh/packer"
+    # }
+
+}
+
+# Logger base for splunk from detection lab
+resource "proxmox_vm_qemu" "ubuntu-logger-splunk" {
+
+    count = var.splunk == 1 ? 1 : 0
+
     # VM General Settings
     target_node = var.proxmox_host
     vmid = "301"
@@ -314,7 +427,7 @@ resource "proxmox_vm_qemu" "ubuntu-logger" {
 
     provisioner "local-exec" {
         working_dir = "../ansible"
-        command = "ansible-venv/bin/ansible-playbook -u packer --private-key ~/.ssh/packer -i '${self.ssh_host},' playbooks/logger.yml -e 'splunk_url=${var.splunk_url} splunk_binary=${var.splunk_binary} splunk_admin_password=${data.vault_generic_secret.splunk.data[var.splunk_admin_password]} set_hostname=0 install_logstash=1'"
+        command = "ansible-venv/bin/ansible-playbook -u packer --private-key ~/.ssh/packer -i '${self.ssh_host},' playbooks/logger-splunk.yml -e 'splunk_url=${var.splunk_url} splunk_binary=${var.splunk_binary} splunk_admin_password=${data.vault_generic_secret.splunk.data[var.splunk_admin_password]} set_hostname=0 install_logstash=1 elastic_oss=1 elastic_non_oss=0'"
     }
 
     provisioner "local-exec" {

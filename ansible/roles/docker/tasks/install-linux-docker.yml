@@ -9,6 +9,7 @@
       - curl
       - gnupg2
       - lsb-release
+      - python3-pip
 
 - name: Add Docker CE key
   become: true
@@ -32,6 +33,12 @@
       - docker-ce-cli
       - containerd.io
       - docker-compose-plugin
+
+- name: Install Docker SDK for Python
+  become: true
+  ansible.builtin.pip:
+    state: latest
+    name: docker>=5.0.0
 
 - name: Enable Docker service
   become: true

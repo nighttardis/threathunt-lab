@@ -5,5 +5,9 @@
   when: (elastic_oss == '1' or elastic_non_oss == '1') and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
 
 - name: Install ElasticSearch
-  ansible.builtin.inclue_tasks: install-linux-elasticsearch.yml
+  ansible.builtin.include_tasks: install-linux-elasticsearch.yml
+  when: install_elastic == '1' and (elastic_oss == '1' or elastic_non_oss == '1') and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+
+- name: Install Kibana
+  ansible.builtin.include_tasks: install-linux-kibana.yml
   when: install_elastic == '1' and (elastic_oss == '1' or elastic_non_oss == '1') and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')

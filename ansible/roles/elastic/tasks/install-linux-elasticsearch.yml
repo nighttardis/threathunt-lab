@@ -41,10 +41,13 @@
   become: true
   ansible.builtin.file:
     state: directory
-    file: "{{ item }}"
+    path: "{{ item }}"
+    owner: 1000
+    group: 1000
   loop:
     - /opt/elasticsearch/data
     - /opt/elasticsearch/config
+    - /opt/elasticsearch/config/certs
 
 - name: Setup ELK Volumes (docker)
   become: true
@@ -57,24 +60,79 @@
   loop:
     - { name: "elasticsearch-config", path: "/opt/elasticsearch/config" }
     - { name: "elasticsearch-data", path: "/opt/elasticsearch/data" }
+    - { name: "elasticsearch-certs", path: "/opt/elasticsearch/config/certs" }
+
+  # https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html
+  # sudo docker exec -it elasticsearch /bin/bash -c "elasticsearch-reset-password --url https://localhost:9200 -s -b -u elastic"
+
+- name: Setup Certs for NonOSS Elastic
+  become: true
+  community.docker.docker_container:
+    name: cert-gen
+    auto_remove: true
+    image: docker.elastic.co/elasticsearch/elasticsearch:{{ elastic_version }}
+    volumes:
+      - elasticsearch-certs:/usr/share/elasticsearch/config/certs
+    pull: true
+    command: >
+      bash -c '
+        if [ ! -f config/certs/ca.zip ]; then
+          bin/elasticsearch-certutil ca --silent --pem -out config/certs/ca.zip;
+          unzip config/certs/ca.zip -d config/certs;
+        fi;
+        if [ ! -f config/certs/certs.zip ]; then
+          bin/elasticsearch-certutil cert --silent --pem -out config/certs/certs.zip --in config/certs/instances.yml --ca-cert config/certs/ca/ca.crt --ca-key config/certs/ca/ca.key;
+          unzip config/certs/certs.zip -d config/certs;
+        fi
+      '
+  when: elastic_non_oss == '1'
+
+- name: Wait for Certs
+  ansible.builtin.wait_for:
+    path: /opt/elasticsearch/config/certs/elasticsearch
+    state: present
+  when: elastic_non_oss == '1'
+
+- name: Set Permissions
+  become: true
+  ansible.builtin.file:
+    state: directory
+    path: "/opt/elasticsearch/config/certs"
+    owner: root
+    group: root
+  when: elastic_non_oss == '1'
 
 - name: Elastic NonOSS Docker
+  become: true
   community.docker.docker_container:
     name: elasticsearch
-    image: docker.elastic.co/elasticsearch/elasticsearch:latest
+    hostname: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:{{ elastic_version }}
     detach: true
     pull: true
     restart_policy: unless-stopped
     networks:
-      -name: elk
+      - name: elk
     volumes:
+      - elasticsearch-certs:/usr/share/elasticsearch/config/certs
       - elasticsearch-data:/usr/share/elasticsearch/data
-      - elasticsearch-conf:/usr/share/elasticsearch/config
+      # - elasticsearch-config:/usr/share/elasticsearch/config
     env:
       node.name: elasticsearch
       discovery.type: 'single-node'
       bootstrap.memory_lock: "true"
       ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+      xpack.security.enabled: "true"
+      xpack.security.http.ssl.enabled: "true"
+      xpack.security.http.ssl.key: "certs/elasticsearch/elasticsearch.key"
+      xpack.security.http.ssl.certificate: "certs/elasticsearch/elasticsearch.crt"
+      xpack.security.http.ssl.certificate_authorities: "certs/ca/ca.crt"
+      xpack.security.transport.ssl.enabled: "true"
+      xpack.security.transport.ssl.key: "certs/elasticsearch/elasticsearch.key"
+      xpack.security.transport.ssl.certificate: "certs/elasticsearch/elasticsearch.crt"
+      xpack.security.transport.ssl.certificate_authorities: "certs/ca/ca.crt"
+      xpack.security.transport.ssl.verification_mode: "certificate"
+      xpack.license.self_generated.type: "basic"
     ports:
       - 9200:9200
       - 9300:9300
@@ -83,10 +141,11 @@
       - 'nofile:65536:65536'
   when: elastic_non_oss == '1'
 
-- name: Elastic NonOSS Docker
+- name: Elastic OSS Docker
+  become: true
   community.docker.docker_container:
     name: elasticsearch
-    image: docker.elastic.co/elasticsearch/elasticsearch-oss:latest
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:{{ elastic_version }}
     detach: true
     pull: true
     restart_policy: unless-stopped
@@ -94,7 +153,7 @@
       -name: elk
     volumes:
       - elasticsearch-data:/usr/share/elasticsearch/data
-      - elasticsearch-conf:/usr/share/elasticsearch/config
+      - elasticsearch-config:/usr/share/elasticsearch/config
     env:
       node.name: elasticsearch
       discovery.type: 'single-node'

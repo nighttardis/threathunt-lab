@@ -1,0 +1,10 @@
+- hosts: all
+  gather_facts: true
+  vars:
+    hostname: logger
+  roles:
+    - linux_common
+    - docker
+    - elastic_repo
+    - elastic
+#    - logstash

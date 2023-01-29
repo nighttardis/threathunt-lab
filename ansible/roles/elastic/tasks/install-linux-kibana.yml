@@ -1,0 +1,44 @@
+---
+
+- name: Kibana NonOSS Docker
+  become: true
+  community.docker.docker_container:
+    name: kibana
+    image: docker.elastic.co/kibana/kibana:{{ elastic_version }}
+    detach: true
+    pull: true
+    restart_policy: unless-stopped
+    networks:
+      - name: elk
+    env:
+      node.name: kibana
+      ELASTICSEARCH_HOSTS: "https://elasticsearch:9200"
+      ELASTICSEARCH_USERNAME: "kibana"
+      ELASTICSEARCH_PASSWORD: "U*r2cvKXLFAj5KGqMBm0"
+      ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES: "config/certs/ca/ca.crt"
+    ports:
+      - 5601:5601
+    volumes:
+      - elasticsearch-certs:/usr/share/kibana/config/certs
+  when: elastic_non_oss == '1'
+
+- name: Kibana NonOSS Docker
+  become: true
+  community.docker.docker_container:
+    name: kibana
+    image: docker.elastic.co/kibana/kibana-oss:{{ elastic_version }}
+    detach: true
+    pull: true
+    restart_policy: unless-stopped
+    networks:
+      -name: elk
+    env:
+      node.name: kibana
+      ELASTICSEARCH_HOSTS: "https://elasticsearch:9200"
+      ELASTICSEARCH_USERNAME: "kibana"
+      ELASTICSEARCH_PASSWORD: "DsRlI0UCglfWioKjv+gd"
+    volumes:
+      - elasticsearch-certs:/usr/share/elastic-certs
+    ports:
+      - 5601:5601
+  when: elastic_oss == '1'
