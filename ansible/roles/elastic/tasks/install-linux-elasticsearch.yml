@@ -133,6 +133,7 @@
       xpack.security.transport.ssl.certificate_authorities: "certs/ca/ca.crt"
       xpack.security.transport.ssl.verification_mode: "certificate"
       xpack.license.self_generated.type: "basic"
+      ELASTIC_PASSWORD: "{{ lookup('community.hashi_vault.vault_kv2_get', 'elastic', engine_mount_point='secrets')['secret']['elasticsearch'] }}"
     ports:
       - 9200:9200
       - 9300:9300
@@ -166,3 +167,15 @@
       - 'memlock:-1:-1'
       - 'nofile:65536:65536'
   when: elastic_oss == '1'
+
+- name: Wait for Elasticsearch
+  ansible.builtin.uri:
+    url: https://127.0.0.1:9200
+    ca_path: '/opt/elasticsearch/config/certs/ca/ca.crt'
+    return_content: true
+    user: "elastic"
+    password: "{{ lookup('community.hashi_vault.vault_kv2_get', 'elastic', engine_mount_point='secrets')['secret']['elasticsearch'] }}"
+  register: _result
+  until: "_result.status == 200"
+  retries: 10
+  delay: 30

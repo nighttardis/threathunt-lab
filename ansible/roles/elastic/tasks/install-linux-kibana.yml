@@ -1,5 +1,17 @@
 ---
 
+- name: Set Kibana Password
+  ansible.builtin.uri:
+    url: https://127.0.0.1:9200/_security/user/kibana_system/_password
+    ca_path: '/opt/elasticsearch/config/certs/ca/ca.crt'
+    return_content: true
+    user: "elastic"
+    password: "{{ lookup('community.hashi_vault.vault_kv2_get', 'elastic', engine_mount_point='secrets')['secret']['elasticsearch'] }}"
+    method: POST
+    body_format: "json"
+    body:
+      password: "{{ lookup('community.hashi_vault.vault_kv2_get', 'elastic', engine_mount_point='secrets')['secret']['kibana'] }}"
+
 - name: Kibana NonOSS Docker
   become: true
   community.docker.docker_container:
@@ -13,8 +25,8 @@
     env:
       node.name: kibana
       ELASTICSEARCH_HOSTS: "https://elasticsearch:9200"
-      ELASTICSEARCH_USERNAME: "kibana"
-      ELASTICSEARCH_PASSWORD: "U*r2cvKXLFAj5KGqMBm0"
+      ELASTICSEARCH_USERNAME: "kibana_system"
+      ELASTICSEARCH_PASSWORD: "{{ lookup('community.hashi_vault.vault_kv2_get', 'elastic', engine_mount_point='secrets')['secret']['kibana'] }}"
       ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES: "config/certs/ca/ca.crt"
     ports:
       - 5601:5601
