@@ -1,0 +1,12 @@
+output {
+    elasticsearch {
+        hosts => ["https://localhost:9200"]
+        index => "%{[@metadata][beat]}-%{[@metadata][version]}"
+        cacert => "/opt/elasticsearch/config/certs/ca/ca.crt"
+        user => "logstash_system"
+        password => "{{ lookup('community.hashi_vault.vault_kv2_get', 'elastic', engine_mount_point='secrets')['secret']['logstash'] }}"
+        ilm_rollover_alias => "%{[@metadata][beat]}"
+        ilm_pattern => "000001"
+        ilm_policy => "sevenday-default"
+    }
+}

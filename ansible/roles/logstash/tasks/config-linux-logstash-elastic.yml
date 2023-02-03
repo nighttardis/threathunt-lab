@@ -1,0 +1,22 @@
+- name: Set Elasticsearch logstash password
+  ansible.builtin.uri:
+    url: https://127.0.0.1:9200/_security/user/logstash_system/_password
+    ca_path: '/opt/elasticsearch/config/certs/ca/ca.crt'
+    return_content: true
+    user: "elastic"
+    password: "{{ lookup('community.hashi_vault.vault_kv2_get', 'elastic', engine_mount_point='secrets')['secret']['elasticsearch'] }}"
+    method: POST
+    body_format: "json"
+    body:
+      password: "{{ lookup('community.hashi_vault.vault_kv2_get', 'elastic', engine_mount_point='secrets')['secret']['logstash'] }}"
+
+- name: Set Elasticsearch Default ILM
+  ansible.builtin.uri:
+    url: https://127.0.0.1:9200/_ilm/policy/sevenday-default
+    ca_path: '/opt/elasticsearch/config/certs/ca/ca.crt'
+    return_content: true
+    user: "elastic"
+    password: "{{ lookup('community.hashi_vault.vault_kv2_get', 'elastic', engine_mount_point='secrets')['secret']['elasticsearch'] }}"
+    method: PUT
+    body_format: "json"
+    body: "{{ lookup('file', 'elastic/ilm/default-7day.json') }}"

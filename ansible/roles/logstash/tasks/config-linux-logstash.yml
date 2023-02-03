@@ -6,21 +6,33 @@
     src: "{{ item }}"
     dest: "/etc/logstash/conf.d/{{ item }}"
     owner: root
-    group: root
-    mode: 0644
+    group: logstash
+    mode: 0640
   with_items:
     - 01-input-beats.conf
   notify: Restart Logstash
 
-- name: Deploy template config
+- name: Deploy template config for Splunk
   become: true
   ansible.builtin.template:
     src: 20-output-tcp.conf.j2
     dest: /etc/logstash/conf.d/20-output-tcp.conf
     owner: root
-    group: root
-    mode: 0644
+    group: logstash
+    mode: 0640
   notify: Restart Logstash
+  when: install_elastic == '0'
+
+- name: Deploy template config for Elastic
+  become: true
+  ansible.builtin.template:
+    src: 20-output-elastic.conf.j2
+    dest: /etc/logstash/conf.d/20-output-elastic.conf
+    owner: root
+    group: logstash
+    mode: 0640
+  notify: Restart Logstash
+  when: install_elastic == '1'
 
 - name: Configure service
   become: true
