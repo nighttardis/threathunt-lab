@@ -2,6 +2,8 @@
   gather_facts: true
   vars:
     hostname: inetsim
+    elastic_non_oss: 1
+    zeek_filebeat: 1
   roles:
     - linux_common
     - inetsim

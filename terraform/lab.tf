@@ -40,12 +40,6 @@ variable "splunk_url" {
     type = string
 }
 
-variable "splunk" {
-    type = number
-    default = 0
-    description = "Deploy Splunk"
-}
-
 # INetsim 
 
 variable "inetsiem_hostname" {
@@ -158,10 +152,9 @@ variable "logstash_port" {
 
 # ELK
 
-variable "elastic" {
+variable "elastic_version" {
     type = number
-    default = 1
-    description = "Install Elastic"
+    description = "Version of elasticsearch/kibana to install"
 }
 
 ### Uncomment this for vault
@@ -255,7 +248,7 @@ resource "proxmox_vm_qemu" "debian-inetsim" {
 
     provisioner "local-exec" {
         working_dir = "../ansible"
-        command = "ansible-venv/bin/ansible-playbook -u packer --private-key ~/.ssh/packer -i '${self.ssh_host},' --extra-vars 'set_hostname=${var.inetsiem_hostname} inetsim=${var.inetsiem_inetsim} polar_proxy=${var.inetsiem_polar_proxy} setup_gateway=${var.inetsiem_setup_gateway} logstash_port=${var.logstash_port} logstash_host=${var.logstash_host} elastic_non_oss=1 zeek_filebeat=1' playbooks/inetsim.yml"
+        command = "ansible-venv/bin/ansible-playbook -u packer --private-key ~/.ssh/packer -i '${self.ssh_host},' --extra-vars 'set_hostname=${var.inetsiem_hostname} inetsim=${var.inetsiem_inetsim} polar_proxy=${var.inetsiem_polar_proxy} setup_gateway=${var.inetsiem_setup_gateway} logstash_port=${var.logstash_port} logstash_host=${var.logstash_host}' playbooks/inetsim.yml"
     }
 
     provisioner "local-exec" {
@@ -271,7 +264,7 @@ resource "proxmox_vm_qemu" "debian-inetsim" {
 # Logger base for elk
 resource "proxmox_vm_qemu" "ubuntu-logger-elastic" {
 
-    count = var.elastic == 1 ? 1 : 0
+    count = var.install_siem == 1 ? 1 : 0
 
     # VM General Settings
     target_node = var.proxmox_host
@@ -343,7 +336,7 @@ resource "proxmox_vm_qemu" "ubuntu-logger-elastic" {
 
     provisioner "local-exec" {
         working_dir = "../ansible"
-        command = "ansible-venv/bin/ansible-playbook -u packer --private-key ~/.ssh/packer -i '${self.ssh_host},' playbooks/logger-elastic.yml -e 'set_hostname=0 elastic_non_oss=1 elastic_oss=0 install_elastic=1'"
+        command = "ansible-venv/bin/ansible-playbook -u packer --private-key ~/.ssh/packer -i '${self.ssh_host},' playbooks/logger-elastic.yml -e 'elastic_version=${var.elastic_version}'"
     }
 
     # provisioner "local-exec" {
@@ -355,7 +348,7 @@ resource "proxmox_vm_qemu" "ubuntu-logger-elastic" {
 # Logger base for splunk from detection lab
 resource "proxmox_vm_qemu" "ubuntu-logger-splunk" {
 
-    count = var.splunk == 1 ? 1 : 0
+    count = var.install_siem == 0 ? 1 : 0
 
     # VM General Settings
     target_node = var.proxmox_host
@@ -427,7 +420,7 @@ resource "proxmox_vm_qemu" "ubuntu-logger-splunk" {
 
     provisioner "local-exec" {
         working_dir = "../ansible"
-        command = "ansible-venv/bin/ansible-playbook -u packer --private-key ~/.ssh/packer -i '${self.ssh_host},' playbooks/logger-splunk.yml -e 'splunk_url=${var.splunk_url} splunk_binary=${var.splunk_binary} splunk_admin_password=${data.vault_generic_secret.splunk.data[var.splunk_admin_password]} set_hostname=0 install_logstash=1 elastic_oss=1 elastic_non_oss=0'"
+        command = "ansible-venv/bin/ansible-playbook -u packer --private-key ~/.ssh/packer -i '${self.ssh_host},' playbooks/logger-splunk.yml -e 'splunk_url=${var.splunk_url} splunk_binary=${var.splunk_binary} splunk_admin_password=${data.vault_generic_secret.splunk.data[var.splunk_admin_password]}'"
     }
 
     provisioner "local-exec" {

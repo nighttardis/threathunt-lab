@@ -2,6 +2,11 @@
   gather_facts: true
   vars:
     hostname: logger
+    install_siem: 0
+    set_hostname: 0
+    install_logstash: 1
+    elastic_oss: 1
+    elastic_non_oss: 0
   roles:
     - linux_common
     - splunk_head
