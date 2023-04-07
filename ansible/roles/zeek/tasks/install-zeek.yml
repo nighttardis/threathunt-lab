@@ -21,6 +21,7 @@
 - name: Deploy Zeek repo
   become: true
   apt_repository:
+    filename: zeek.list
     repo:  "deb [signed-by=/etc/apt/trusted.gpg.d/zeek.asc] http://download.opensuse.org/repositories/security:/zeek/Debian_11/ /"
     state: present
     update_cache: yes
