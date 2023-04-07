@@ -1,0 +1,16 @@
+---
+
+- name: Restart InetSim
+  become: true
+  ansible.builtin.systemd:
+    name: inetsim
+    state: restarted
+    daemon_reload: true
+
+- name: Restart DHCPD
+  become: true
+  ansible.builtin.systemd:
+    name: isc-dhcp-server
+    state: restarted
+    daemon_reload: true
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'

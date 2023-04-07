@@ -1,0 +1,31 @@
+---
+
+- name: Enable DNS Service
+  become: true
+  ansible.builtin.replace:
+    path: /etc/inetsim/inetsim.conf
+    regexp: "^#dns_default_ip.+"
+    replace: "dns_default_ip {{ ansible_eth1.ipv4.address }}"
+  notify: Restart InetSim
+
+- name: Update DHCPD
+  become: true
+  ansible.builtin.replace:
+    path: /etc/dhcp/dhcpd.conf
+    regexp: "^  option domain-name-servers 192.168.0.153;"
+    replace: "  option domain-name-servers {{ ansible_eth1.ipv4.address }};"
+  notify: Restart DHCPD
+
+- name: Deactivate PolarProxy
+  become: true
+  ansible.builtin.systemd:
+    name: PolarProxy
+    state: stopped
+    enabled: false
+
+- name: Activate PolarProxy-Inetsim
+  become: true
+  ansible.builtin.systemd:
+    name: PolarProxy-inetsim
+    state: started
+    enabled: true

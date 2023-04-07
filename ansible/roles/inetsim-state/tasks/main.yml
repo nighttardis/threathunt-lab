@@ -1,0 +1,9 @@
+---
+
+- name: Enable InetSim
+  ansible.builtin.include_tasks: enable-inetsim.yml
+  when: inetsim == "1"
+
+- name: Disable InetSim
+  ansible.builtin.include_tasks: disable-inetsim.yml
+  when: inetsim == "0"
