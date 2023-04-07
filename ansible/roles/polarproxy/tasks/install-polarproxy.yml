@@ -43,7 +43,7 @@
   become: true
   ansible.builtin.copy:
     src: PolarProxy-inetsim.service
-    dest: /etc/systemd/system/PolarProxy.service
+    dest: /etc/systemd/system/PolarProxy-inetsim.service
     owner: root
     group: root
     mode: 0644
