@@ -10,17 +10,20 @@
       - libbrotli-dev
     state: present
 
-- name: Deploy Zeek repo
-  become: true
-  ansible.builtin.copy:
-    src: zeek.list
-    dest: /etc/apt/sources.list.d/zeek.list
-
 - name: Add Zeek Key
   become: true
-  ansible.builtin.apt_key:
-    url: https://download.opensuse.org/repositories/security:zeek/Debian_11/Release.key
+  ansible.builtin.get_url:
+    url: "https://download.opensuse.org/repositories/security:zeek/Debian_11/Release.key"
+    dest: /etc/apt/trusted.gpg.d/zeek.asc
+    mode: '0644'
+    force: true
+
+- name: Deploy Zeek repo
+  become: true
+  apt_repository:
+    repo:  "deb [signed-by=/etc/apt/trusted.gpg.d/zeek.asc] http://download.opensuse.org/repositories/security:/zeek/Debian_11/ /"
     state: present
+    update_cache: yes
 
 - name: Install Zeek
   become: true
