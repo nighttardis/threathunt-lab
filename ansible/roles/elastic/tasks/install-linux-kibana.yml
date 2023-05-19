@@ -28,6 +28,7 @@
       ELASTICSEARCH_USERNAME: "kibana_system"
       ELASTICSEARCH_PASSWORD: "{{ lookup('community.hashi_vault.vault_kv2_get', 'elastic', engine_mount_point='secrets')['secret']['kibana'] }}"
       ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES: "config/certs/ca/ca.crt"
+      XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY: "{{ lookup('community.hashi_vault.vault_kv2_get', 'elastic', engine_mount_point='secrets')['secret']['XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY'] }}"
     ports:
       - 5601:5601
     volumes:
@@ -47,8 +48,8 @@
     env:
       node.name: kibana
       ELASTICSEARCH_HOSTS: "https://elasticsearch:9200"
-      ELASTICSEARCH_USERNAME: "kibana"
-      ELASTICSEARCH_PASSWORD: "DsRlI0UCglfWioKjv+gd"
+      ELASTICSEARCH_USERNAME: "kibana_system"
+      ELASTICSEARCH_PASSWORD: "{{ lookup('community.hashi_vault.vault_kv2_get', 'elastic', engine_mount_point='secrets')['secret']['kibana'] }}"
     volumes:
       - elasticsearch-certs:/usr/share/elastic-certs
     ports:

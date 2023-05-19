@@ -2,11 +2,11 @@
   gather_facts: true
   vars:
     hostname: logger
-    install_siem: 1
-    set_hostname: 0
-    elastic_non_oss: 1
-    elastic_oss: 0
-    install_logstash: 1
+    install_siem: '1'
+    set_hostname: '0'
+    elastic_non_oss: '1'
+    elastic_oss: '0'
+    install_logstash: '1'
   roles:
     - linux_common
     - docker
