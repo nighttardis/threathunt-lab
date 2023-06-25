@@ -33,7 +33,8 @@
     path: /opt/zeek/share/zeek/site/local.zeek
     insertafter: EOF
     create: true
-    block: "@load tuning/json-logs"
+    block: |
+      @load tuning/json-logs
   notify: Deploy zeek config
 
 - name: Set http2
@@ -42,7 +43,18 @@
     path: /opt/zeek/share/zeek/site/local.zeek
     insertafter: EOF
     create: true
-    block: "@load http2"
+    block: |
+      @load http2
+  notify: Deploy zeek config
+
+- name: Add JA3 to zeek config
+  become: true
+  ansible.builtin.blockinfile:
+    path: /opt/zeek/share/zeek/site/local.zeek
+    insertafter: EOF
+    create: true
+    block: | 
+      @load ja3
   notify: Deploy zeek config
 
 - name: Start Zeek service

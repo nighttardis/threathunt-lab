@@ -38,3 +38,8 @@
   become: true
   ansible.builtin.shell: /opt/zeek/bin/zkg install --force zeek/mitrecnd/bro-http2
   when: zeek_update.changed
+
+- name: Install JA3
+  become: true
+  ansible.builtin.shell: /opt/zeek/bin/zkg install --force ja3
+  when: zeek_update.changed

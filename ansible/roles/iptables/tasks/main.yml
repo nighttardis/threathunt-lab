@@ -1,0 +1,20 @@
+---
+
+- name: Disable IP Forward
+  become: true
+  ansible.builtin.iptables:
+    state: absent
+    table: nat
+    chain: PREROUTING
+    protocol: tcp
+    in_interface: eth1
+    match: tcp
+    destination_port: 443
+    jump: REDIRECT
+    to_ports: 443
+  when: disable_http_forwarding == '1'
+
+- name: Enable IP Forward
+  become: true
+  ansible.builtin.shell: iptables-restore < /etc/iptables/rules.v4
+  when: disable_http_forwarding == '0'

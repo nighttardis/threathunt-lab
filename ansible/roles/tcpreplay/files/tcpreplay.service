@@ -1,6 +1,7 @@
 [Unit]
 Description=Tcpreplay of decrypted traffic from PolarProxy
 After=PolarProxy.service
+PartOf=PolarProxy.service
 
 [Service]
 Type=simple

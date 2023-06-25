@@ -1,0 +1,5 @@
+---
+
+- name: Exclude Defender
+  ansible.windows.win_powershell:
+    script: Add-MpPreference -ExclusionPath C:\users\vagrant\Downloads

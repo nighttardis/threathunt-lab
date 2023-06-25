@@ -3,7 +3,11 @@
 - name: Enable InetSim
   ansible.builtin.include_tasks: enable-inetsim.yml
   when: inetsim == "1"
+  vars:
+    inetsim_internal_address: "10.0.1.2"
 
 - name: Disable InetSim
   ansible.builtin.include_tasks: disable-inetsim.yml
   when: inetsim == "0"
+  vars:
+    inetsim_internal_address: "10.0.1.2"

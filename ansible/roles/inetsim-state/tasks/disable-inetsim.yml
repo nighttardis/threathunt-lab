@@ -5,14 +5,14 @@
   ansible.builtin.replace:
     path: /etc/inetsim/inetsim.conf
     regexp: "^dns_default_ip.+"
-    replace: "#dns_default_ip {{ ansible_eth1.ipv4.address }}"
+    replace: "#dns_default_ip {{ inetsim_internal_address }}"
   notify: Restart InetSim
 
 - name: Update DHCPD
   become: true
   ansible.builtin.replace:
     path: /etc/dhcp/dhcpd.conf
-    regexp: "^  option domain-name-servers {{ ansible_eth1.ipv4.address }};"
+    regexp: "^  option domain-name-servers {{ inetsim_internal_address }};"
     replace: "  option domain-name-servers 192.168.0.153;"
   notify: Restart DHCPD
 
