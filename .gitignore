@@ -9,3 +9,4 @@ ansible/ansible-venv
 *.iso
 venv
 TODO.md
+packer/windows-10/files/office_config.xml
