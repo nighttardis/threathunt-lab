@@ -22,12 +22,20 @@ variable "windows_client_source" {
     type = string
 }
 
+variable "windows_office_client_source" {
+    type = string
+}
+
 variable "isolated_network_bridge" {
     type = string
 }
 
 variable "public_network_bridge" {
     type = string
+}
+
+variable "install_siem" {
+    type = number
 }
 
 # Splunk things
@@ -153,7 +161,7 @@ variable "logstash_port" {
 # ELK
 
 variable "elastic_version" {
-    type = number
+    type = string
     description = "Version of elasticsearch/kibana to install"
 }
 
@@ -172,6 +180,7 @@ resource "proxmox_vm_qemu" "debian-inetsim" {
 
     # VM Advanced General Settings
     onboot = false 
+    automatic_reboot = false
 
     # VM OS Settings
     clone = var.debian_source
@@ -182,7 +191,7 @@ resource "proxmox_vm_qemu" "debian-inetsim" {
     # VM CPU Settings
     cores = 2
     sockets = 1
-    cpu = "host"    
+    cpu = "host"   
     
     # VM Memory Settings
     memory = 2048
@@ -205,7 +214,7 @@ resource "proxmox_vm_qemu" "debian-inetsim" {
 
     lifecycle {
         ignore_changes = [
-            network, qemu_os, desc
+            network, qemu_os, desc, disk, numa, scsihw, clone_wait, additional_wait, automatic_reboot, 
         ]
     }
 
@@ -273,6 +282,7 @@ resource "proxmox_vm_qemu" "ubuntu-logger-elastic" {
 
     # VM Advanced General Settings
     onboot = false 
+    automatic_reboot = false
 
     # VM OS Settings
     clone = var.ubuntu_source
@@ -294,7 +304,6 @@ resource "proxmox_vm_qemu" "ubuntu-logger-elastic" {
         storage = "VMs"
         cache = "writeback"
         format = "qcow2"
-        discard = "on"
     }
 
     # VM Network Settings
@@ -309,6 +318,13 @@ resource "proxmox_vm_qemu" "ubuntu-logger-elastic" {
     }
 
     ipconfig1 = "ip=10.0.1.3/24"
+
+    lifecycle {
+        ignore_changes = [
+            network, qemu_os, desc, disk, numa, scsihw, clone_wait, additional_wait, automatic_reboot, 
+        ]
+    }
+
 
     provisioner "remote-exec" {
         inline = [
@@ -357,6 +373,7 @@ resource "proxmox_vm_qemu" "ubuntu-logger-splunk" {
 
     # VM Advanced General Settings
     onboot = false 
+    automatic_reboot = false
 
     # VM OS Settings
     clone = var.ubuntu_source
@@ -378,7 +395,6 @@ resource "proxmox_vm_qemu" "ubuntu-logger-splunk" {
         storage = "VMs"
         cache = "writeback"
         format = "qcow2"
-        discard = "on"
     }
 
     # VM Network Settings
@@ -393,6 +409,12 @@ resource "proxmox_vm_qemu" "ubuntu-logger-splunk" {
     }
 
     ipconfig1 = "ip=10.0.1.3/24"
+
+    lifecycle {
+        ignore_changes = [
+            network, qemu_os, desc, disk, numa, scsihw, clone_wait, additional_wait, automatic_reboot, 
+        ]
+    }
 
     provisioner "remote-exec" {
         inline = [
@@ -430,7 +452,7 @@ resource "proxmox_vm_qemu" "ubuntu-logger-splunk" {
 }
 
 resource "proxmox_vm_qemu" "windows-client" {
-    count=1
+    count=2
     # VM General Settings
     target_node = var.proxmox_host
     vmid = 310 - (count.index)
@@ -438,6 +460,7 @@ resource "proxmox_vm_qemu" "windows-client" {
 
     # VM Advanced General Settings
     onboot = false 
+    automatic_reboot = false
 
     # VM OS Settings
     clone = var.windows_client_source
@@ -461,13 +484,59 @@ resource "proxmox_vm_qemu" "windows-client" {
 
     lifecycle {
         ignore_changes = [
-            network, qemu_os, desc
+            network, qemu_os, desc, disk, numa, scsihw, clone_wait, additional_wait, automatic_reboot, 
         ]
     }
+
     
     provisioner "local-exec" {
         working_dir = "../ansible"
         command = "ansible-venv/bin/ansible-playbook -i '${self.ssh_host},' --extra-vars 'ansible_user=vagrant ansible_password=vagrant verbose_win_security_logging=${var.verbose_win_security_logging} win_sysmon_url=${var.win_sysmon_url} win_install_sysmon=${var.win_install_sysmon} win_sysmon_template=${var.win_sysmon_template} win_4688_cmd_line=${var.win_4688_cmd_line} win_sysinternal_url=${var.win_sysinternal_url} win_install_sysinternals=${var.win_install_sysinternals} polarproxy=${var.win_polarproxy} polarproxyhost=${var.win_polarproxyhost} polarproxycaport=${var.win_polarproxycaport} winlogbeat_download_file=${var.winlogbeat_download_file} logstash_port=${var.logstash_port} logstash_host=${var.logstash_host} file_ext=${var.winlogbeat_file_ext} winlogbeat_download_url_base=${var.winlogbeat_download_url_base} winlogbeat_install_location=\"${var.winlogbeat_install_location}\" win_install_winlogbeat=${var.win_install_winlogbeat} winlogbeat_logstash=${var.winlogbeat_logstash}' playbooks/windows_client.yml"
     }
+
+}
+
+resource "proxmox_vm_qemu" "windows-office-client" {
+    count=1
+    # VM General Settings
+    target_node = var.proxmox_host
+    vmid = 320 - (count.index)
+    name = "win10-office-${count.index}"
+
+    # VM Advanced General Settings
+    onboot = false 
+    automatic_reboot = false
+
+    # VM OS Settings
+    clone = var.windows_office_client_source
+
+    # VM System Settings
+    agent = 1
+    
+    # VM CPU Settings
+    cores = 2
+    sockets = 2
+    cpu = "host"    
+    
+    # VM Memory Settings
+    memory = 4096
+
+    # VM Network Settings
+    network {
+        bridge = var.isolated_network_bridge
+        model  = "e1000"
+    }
+
+    lifecycle {
+        ignore_changes = [
+            network, qemu_os, desc, disk, numa, scsihw, clone_wait, additional_wait, automatic_reboot, 
+        ]
+    }
+
+    
+    # provisioner "local-exec" {
+    #     working_dir = "../ansible"
+    #     command = "ansible-venv/bin/ansible-playbook -i '${self.ssh_host},' --extra-vars 'ansible_user=vagrant ansible_password=vagrant verbose_win_security_logging=${var.verbose_win_security_logging} win_sysmon_url=${var.win_sysmon_url} win_install_sysmon=${var.win_install_sysmon} win_sysmon_template=${var.win_sysmon_template} win_4688_cmd_line=${var.win_4688_cmd_line} win_sysinternal_url=${var.win_sysinternal_url} win_install_sysinternals=${var.win_install_sysinternals} polarproxy=${var.win_polarproxy} polarproxyhost=${var.win_polarproxyhost} polarproxycaport=${var.win_polarproxycaport} winlogbeat_download_file=${var.winlogbeat_download_file} logstash_port=${var.logstash_port} logstash_host=${var.logstash_host} file_ext=${var.winlogbeat_file_ext} winlogbeat_download_url_base=${var.winlogbeat_download_url_base} winlogbeat_install_location=\"${var.winlogbeat_install_location}\" win_install_winlogbeat=${var.win_install_winlogbeat} winlogbeat_logstash=${var.winlogbeat_logstash}' playbooks/windows_client.yml"
+    # }
 
 }

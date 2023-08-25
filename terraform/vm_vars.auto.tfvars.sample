@@ -1,12 +1,30 @@
 proxmox_host = "<PROXMOX HOSTNAME>"
 debian_source = "debian-bullseye"
 ubuntu_source = "ubuntu-server-focal"
+windows_client_source = "window-10"
+windows_office_client_source = ""
 isolated_network_bridge = "vmbr1"
 public_network_bridge = "vmbr0"
+# Install SIEM 0=splunk, 1=ELK NON OSS
+install_siem = 1
+# logger
 splunk_url = "https://download.splunk.com/products/splunk/releases/9.0.1/linux"
 splunk_binary = "splunk-9.0.1-82c987350fde-Linux-x86_64.tgz"
-# Vars for inestsim/gateway host
-inetsiem_hostname = "0"      # change hostname to random hostname
-inetsiem_inetsim = "0"       # Setup inetsim on host
-inetsiem_polar_proxy = "1"   # Setup polar proxy on host
-inetsiem_setup_gateway = "1" # Set host up as a gateway
+# elastic
+elastic_version = "8.6.1"
+# inetsiem
+inetsiem_hostname = "0"
+inetsiem_inetsim = "0"
+inetsiem_polar_proxy = "1"
+inetsiem_setup_gateway = "1"
+# windows
+winlogbeat_download_file = "winlogbeat-oss-8.5.0-windows-x86_64"
+verbose_win_security_logging = "1"
+win_sysmon_url = "https://download.sysinternals.com/files/Sysmon.zip"
+win_install_sysmon = "1"
+win_sysmon_template = "sysmon-config-swift.xml"
+win_4688_cmd_line = "1"
+win_sysinternal_url = "https://download.sysinternals.com/files/SysinternalsSuite.zip"
+win_install_sysinternals = "0"
+win_polarproxy = "1"
+win_install_winlogbeat = "1"
