@@ -1,0 +1,50 @@
+---
+
+# - name: Install 7-zip
+#   ansible.windows.win_package:
+#     path: https://www.7-zip.org/a/7z2301-x64.exe
+#     state: present
+#     arguments:
+#       /S
+
+- name: Ensure Chocolatey installed
+  chocolatey.chocolatey.win_chocolatey:
+    name: chocolatey
+    state: present
+    source: https://community.chocolatey.org/install.ps1
+
+- name: Install Chrome
+  chocolatey.chocolatey.win_chocolatey:
+    name: googlechrome
+    state: present
+
+- name: Install 7zip
+  chocolatey.chocolatey.win_chocolatey:
+    name: 7zip
+    state: present
+
+- name: Install Firefox
+  chocolatey.chocolatey.win_chocolatey:
+    name: firefox
+    state: present
+
+- name: Install VSCode
+  chocolatey.chocolatey.win_chocolatey:
+    name: vscode
+    state: present
+
+- name: Install Windows Terminal
+  chocolatey.chocolatey.win_chocolatey:
+    name: microsoft-windows-terminal
+    state: present
+
+- name: Install Powershell 7
+  ansible.windows.win_package:
+    path: https://github.com/PowerShell/PowerShell/releases/download/v7.3.6/PowerShell-7.3.6-win-x64.msi
+    state: present
+    arguments:
+      /quiet 
+      ADD_EXPLORER_CONTEXT_MENU_OPENPOWERSHELL=1 
+      ADD_FILE_CONTEXT_MENU_RUNPOWERSHELL=1 
+      REGISTER_MANIFEST=1 
+      ADD_PATH=1

@@ -117,11 +117,6 @@ build {
     sources = ["source.proxmox-iso.windows-10-22H2-office"]
 
     # Provisioning the VM Template for Cloud-Init Integration in Proxmox #3
-    provisioner "powershell" {
-        scripts = [ 
-            "files/install-winget.ps1"
-        ]
-    }
 
     provisioner "windows-shell" {
         scripts = [

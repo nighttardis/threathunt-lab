@@ -14,3 +14,5 @@
   ansible.builtin.include_tasks: windows-update-network-profile.yml
 - name: Configure ProxySettingsPerUser
   ansible.builtin.include_tasks: windows-configure-proxy.yml
+- name: Install Windows Utilities
+  ansible.builtin.include_tasks: windows-utils-install.yml
