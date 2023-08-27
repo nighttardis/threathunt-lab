@@ -62,7 +62,7 @@ source "proxmox" "windows-10" {
     scsi_controller = "virtio-scsi-pci"
 
     disks {
-        disk_size = "20G"
+        disk_size = "60G"
         format = "qcow2"
         storage_pool = "VMs"
         storage_pool_type = "nfs"
@@ -70,10 +70,10 @@ source "proxmox" "windows-10" {
     }
 
     # VM CPU Settings
-    cores = "2"
+    cores = "4"
 
     # VM Memory Settings
-    memory = "2048" 
+    memory = "4096" 
 
      # VM Network Settings
     network_adapters {
