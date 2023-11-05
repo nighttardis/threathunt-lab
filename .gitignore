@@ -10,3 +10,5 @@ ansible/ansible-venv
 venv
 TODO.md
 packer/windows-10/files/office_config.xml
+packer/*/files/iso/*.iso
+*.auto.pkrvars.hcl
