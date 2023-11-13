@@ -18,7 +18,7 @@ if [ $? == 1 ]; then
 fi
 
 echo "[+] Build iso ${AUTO_ISO}"
-xorrisofs -J -l -R -V "autounatend CD" -iso-level 4 -o ./${1}/files/iso/Autounattend_${1}.iso ${AUTO_ISO}
+xorrisofs -J -l -R -V "autounatend CD" -f -iso-level 4 -o ./${1}/files/iso/Autounattend_${1}.iso ${AUTO_ISO}
 
 sed "s/<autounattended_cd_name>/files\/iso\/Autounattend_${1}.iso/" windows-autounattend.pkrvars.hcl.sample > $1/$1.auto.pkrvars.hcl
 

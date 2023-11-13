@@ -15,6 +15,7 @@ source "proxmox-iso" "windows-server-2022" {
     vm_id = "905"
     vm_name = "window-server-2022"
     template_description = "Windows Server 2022 Template"
+    template_name = "window-server-2022"
 
     # TODO: Update
 
@@ -83,6 +84,20 @@ build {
     sources = ["source.proxmox-iso.windows-server-2022"]
 
     # Provisioning the VM Template for Cloud-Init Integration in Proxmox #3
+    provisioner "powershell" {
+        elevated_user = "vagrant"
+        elevated_password = "vagrant"
+        timeout = "30m"
+        scripts = ["files/autounattend/windows/cloudinit/install-cloudbaseinit.ps1"]
+    }
+
+    provisioner "powershell" {
+        elevated_user = "vagrant"
+        elevated_password = "vagrant"
+        scripts = ["files/autounattend/windows/cloudinit/config-cloudbaseinit.ps1"]
+    }
+
+
 #    provisioner "windows-shell" {
 #        scripts = [
 #            "files/disablewinupdate.bat"
