@@ -1,0 +1,26 @@
+- name: "Create users"
+  microsoft.ad.user:
+    name: "{{ item.key }}"
+    firstname: "{{ item.value.firstname }}"
+    surname: "{{ item.value.lastname | default(item.value.firstname) }}"
+    password: "{{ item.value.password }}"
+    password_never_expires: yes
+    state: present
+    path: "{{ item.value.path }}"
+    description: "{{ item.value.description | default('-') }}"
+    groups: 
+      add: "{{ item.value.groups }}"
+    city: "{{item.value.city | default('-') }}"
+  with_dict: "{{ lab.users }}"
+  register: usercreate
+  until: "usercreate is not failed"
+  retries: 3
+  delay: 30
+
+- name: "Set users SPN lists"
+  microsoft.ad.user:
+    name: "{{ item.key }}"
+    spn:
+      add: "{{ item.value.spns }}"
+  with_dict: "{{ lab.users }}"
+  when: item.value.spns is defined

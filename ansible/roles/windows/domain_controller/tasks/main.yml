@@ -1,0 +1,26 @@
+- name: Ensure domain exists
+  ansible.windows.win_domain:
+    dns_domain_name: "{{domain}}"
+    safe_mode_password: "{{ lookup('community.hashi_vault.vault_kv2_get', 'windows', engine_mount_point='secrets')['secret']['server_admin'] }}"
+  register: check_domain
+
+- name: Reboot to complete domain creation
+  ansible.windows.win_reboot:
+    reboot_timeout: 900
+    post_reboot_delay: 100
+  when: check_domain.changed
+
+- name: Ensure domain controller
+  ansible.windows.win_domain_controller:
+    dns_domain_name: "{{domain}}"
+    domain_admin_user: "Administrator@{{domain}}"
+    domain_admin_password: "{{ lookup('community.hashi_vault.vault_kv2_get', 'windows', engine_mount_point='secrets')['secret']['server_admin'] }}"
+    safe_mode_password: "{{ lookup('community.hashi_vault.vault_kv2_get', 'windows', engine_mount_point='secrets')['secret']['server_admin'] }}"
+    state: domain_controller
+  register: check_domain_controller
+
+- name: Reboot to complete domain controller setup
+  ansible.windows.win_reboot:
+    reboot_timeout: 900
+    post_reboot_delay: 100
+  when: check_domain_controller.changed

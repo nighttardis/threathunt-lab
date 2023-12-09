@@ -32,6 +32,10 @@ source "proxmox-iso" "windows-server-2022" {
      # VM System Settings
     qemu_agent = true
 
+    # VM Cloud-Init Settings
+    cloud_init = true
+    cloud_init_storage_pool = "local-lvm"
+
     # VM Hard Disk Settings
     scsi_controller = "virtio-scsi-pci"
 

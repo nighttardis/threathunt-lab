@@ -1,0 +1,8 @@
+---
+
+- name: Enable Other Logon/Logoff Events
+  failed_when: false
+  community.windows.win_audit_policy_system:
+    subcategory: Other Logon/Logoff Events
+    audit_type: success, failure
+  notify: Restart Windows

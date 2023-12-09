@@ -1,0 +1,31 @@
+---
+
+- name: Remove any explicit proxies that are set
+  community.windows.win_inet_proxy:
+    proxy: ''
+    bypass: ''
+
+- name: Download PolarProxy CA
+  ansible.windows.win_get_url:
+    url: 'http://{{ polarproxyhost }}:{{ polarproxycaport }}/polarproxy.cer'
+    dest: 'c:\polarproxy.cer'
+
+- name: Add PolarProxy CA
+  ansible.windows.win_powershell:
+    script: Import-Certificate -FilePath "C:\polarproxy.cer" -CertStoreLocation Cert:\LocalMachine\Root
+
+# This should be set before running the win_inet_proxy module
+# - name: Configure IE proxy settings to apply to all users
+#   ansible.windows.win_regedit:
+#     path: HKLM:\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\Internet Settings
+#     name: ProxySettingsPerUser
+#     data: 0
+#     type: dword
+#     state: present
+
+# - name: Configure IE to use explicit proxy host with port and without auto detection
+#   win_inet_proxy:
+#     auto_detect: no
+#     proxy: '{{ polarproxyhost }}:8080'
+#     bypass:
+#       - <local>

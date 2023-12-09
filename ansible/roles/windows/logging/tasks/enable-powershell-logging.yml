@@ -1,0 +1,20 @@
+---
+
+- name: Enable Windows Scriptblock Logging
+  failed_when: false
+  ansible.windows.win_regedit:
+    key: "HKLM:\\Software\\Policies\\Microsoft\\Windows\\PowerShell\\ScriptBlockLogging"
+    value: EnableScriptBlockLogging
+    datatype: dword
+    data: 1
+  notify: Restart Windows
+
+- name: Enable Windows Scriptblock Logging
+  failed_when: false
+  ansible.windows.win_regedit:
+    key: "HKLM:\\Software\\Policies\\Microsoft\\Windows\\PowerShell\\ScriptBlockLogging"
+    value: EnableScriptBlockInvocationLogging
+    datatype: dword
+    data: 1
+  notify: Restart Windows
+

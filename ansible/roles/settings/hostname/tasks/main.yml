@@ -1,0 +1,9 @@
+---
+
+- name: Win Set Hostname
+  ansible.builtin.include_tasks: windows-set-hostname.yml
+  when: set_hostname == "1" and 'Windows' in ansible_distribution
+
+- name: Lin Set Hostname
+  ansible.builtin.include_tasks: linux-set-hostname.yml
+  when: set_hostname == "1" and 'Windows' not in ansible_distribution

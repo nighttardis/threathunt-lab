@@ -19,6 +19,9 @@ copy-item "E:\windows\cloudinit\cloudbase-init.conf" "C:\Program Files\Cloudbase
 copy-item "E:\windows\cloudinit\cloudbase-init-unattend.conf" "C:\Program Files\Cloudbase Solutions\Cloudbase-Init\conf\cloudbase-init-unattend.conf" -force
 copy-item "E:\windows\cloudinit\cloudbase-init-unattend.xml" "C:\Program Files\Cloudbase Solutions\Cloudbase-Init\conf\cloudbase-init-unattend.xml" -force
 
+# Fixes for using nocloudservice with proxmox where it uses _ instead of - for file names
+(Get-Content "c:\program files\Cloudbase Solutions\cloudbase-init\python\Lib\site-packages\cloudbaseinit\metadata\services\nocloudservice.py").Replace('meta-data', 'meta_data').Replace('user-data', 'user_data').Replace('network-config','network_config') | Set-Content "c:\program files\Cloudbase Solutions\cloudbase-init\python\Lib\site-packages\cloudbaseinit\metadata\services\nocloudservice.py"
+
 echo "Disable cloudbaseinit at start"
 # disable cloudbase-init start
 Set-Service -Name cloudbase-init -StartupType Disabled

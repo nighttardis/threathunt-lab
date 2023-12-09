@@ -1,0 +1,40 @@
+---
+# Load datas
+- import_playbook: data.yml
+  vars:
+    data_path: "../../data/"
+  tags: 'data'
+
+- name: WindowsServer
+  hosts: all
+  gather_facts: true
+  vars:
+    ansible_connection: winrm
+    ansible_winrm_server_cert_validation: ignore
+    hostname: "{{ lab.hosts[host_key].hostname }}"
+    domain: "{{ lab.hosts[host_key].domain }}"
+    host_type: "{{ lab.hosts[host_key].type }}"
+    polarproxy: "{{ lab.hosts[host_key].proxy }}"
+    polarproxyhost: "{{ lab.polarproxyhost }}"
+    polarproxycaport: "{{ lab.polarproxycaport }}"
+    win_install_sysmon: "{{ lab.hosts[host_key].win_install_sysmon }}"
+    win_sysmon_template: "{{ lab.hosts[host_key].win_sysmon_template | default(lab.win_sysmon_template) }}"
+    win_sysmon_version: "{{ lab.hosts[host_key].win_sysmon_version | default(lab.win_sysmon_version) }}"
+    win_install_oss_winlogbeat: "{{ lab.hosts[host_key].win_install_oss_winlogbeat }}"
+    winlogbeat_install_location: "{{ lab.hosts[host_key].winlogbeat.install_location | default(lab.winlogbeat.install_location) }}"
+    winlogbeat_download_file: "{{ lab.hosts[host_key].winlogbeat.download_file | default(lab.winlogbeat.download_file) }}"
+    winlogbeat_download_url_base: "{{ lab.hosts[host_key].winlogbeat.download_url_base | default(lab.winlogbeat.download_url_base )}}"
+    winlogbeat_logstash: "{{ lab.hosts[host_key].winlogbeat.logstash | default(lab.winlogbeat.logstash) }}"
+    logstash_host: "{{ lab.hosts[host_key].logstash_host | default(lab.logstash_host) }}"
+    logstash_port: "{{ lab.hosts[host_key].logstash_port | default(lab.logstash_port) }}"
+    win_enable_ps: "{{ lab.hosts[host_key].enable_ps_logging | default(lab.enable_ps_logging) }}"
+    win_enable_4688: "{{ lab.hosts[host_key].enable_4688_logging | default(lab.enable_4688_logging) }}"
+    win_enable_other_logonlogoff: "{{ lab.hosts[host_key].enable_other_logonlogoff_events | default(lab.enable_other_logonlogoff_events) }}"
+  roles:
+    - { role: 'settings/proxy', tags: 'proxy' }
+    - { role: 'windows/domain_controller', tags: 'domain_controller', when: host_type == 'dc' }
+    - { role: 'sysmon', tags: 'sysmon' }
+    - { role: 'winlogbeat', tags: 'winlogbeat' }
+    - { role: 'windows/domain_users', tags: 'domain_controller', when: host_type == 'dc' }
+    - { role: 'windows/logging' }
+    - { role: 'windows/domain_computers', tags: 'domain_controller', when: host_type == 'dc' }

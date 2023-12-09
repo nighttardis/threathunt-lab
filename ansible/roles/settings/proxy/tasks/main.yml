@@ -1,0 +1,5 @@
+---
+
+- name: Win Import Polar Proxy Cert
+  ansible.builtin.include_tasks: windows-import-proxy-cert.yml
+  when: polarproxy == "1" and 'Windows' in ansible_distribution

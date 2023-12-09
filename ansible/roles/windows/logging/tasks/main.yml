@@ -1,0 +1,12 @@
+---
+
+- name: Enable PS Logging
+  ansible.builtin.include_tasks: enable-powershell-logging.yml
+  when: win_enable_ps == "1"
+- name: Enable cmd line audit
+  ansible.builtin.include_tasks: enable-4688-process-creation.yml
+  when: win_enable_4688 == "1"
+- name: Enable Other Logon/Logoff Events
+  ansible.builtin.include_tasks: enable-other-logon-logoff.yml
+  when: win_enable_other_logonlogoff == "1"
+

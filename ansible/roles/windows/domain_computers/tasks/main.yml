@@ -1,0 +1,12 @@
+- name: Create Computers
+  microsoft.ad.computer:
+    name: "{{ item.key }}"
+    state: present
+    path: "{{ item.value.path }}"
+    description: "{{ item.value.description | default('-') }}"
+    dns_hostname: "{{ item.value.hostname }}"
+  with_dict: "{{ lab.computers }}"
+  register: computercreate
+  until: "computercreate is not failed"
+  retries: 3
+  delay: 30

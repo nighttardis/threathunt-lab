@@ -4,6 +4,19 @@
   vars:
     ansible_connection: winrm
     ansible_winrm_server_cert_validation: ignore
+    verbose_win_security_logging: 0
+    win_4688_cmd_line: 0
+    win_sysmon_template: sysmon-config-swift.xml
+    win_sysmon_version: "15.0"
+    win_install_sysmon: "0"
+    win_install_sysinternals: "0"
+    win_sysinternal_url: "https://download.sysinternals.com/files/SysinternalsSuite.zip"
+    win_install_oss_winlogbeat: "0"
+    winlogbeat_install_location: "c:/program files/ansible/winlogbeat"
+    winlogbeat_download_file: "winlogbeat-oss-8.9.1-windows-x86_64"
+    winlogbeat_logstash: "0"
+    winlogbeat_download_url_base: "https://artifacts.elastic.co/downloads/beats/winlogbeat/"
+    polarproxy: "0"
   roles:
     - windows_common
     - sysmon
