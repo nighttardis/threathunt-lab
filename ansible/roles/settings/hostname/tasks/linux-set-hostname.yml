@@ -1,0 +1,7 @@
+---
+
+- name: Change Hostname
+  become: true
+  ansible.builtin.hostname:
+    name: "{{ hostname }}"
+  register: lin_hostname
