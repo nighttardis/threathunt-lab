@@ -1,0 +1,3 @@
+name: Create an iventory from state file
+plugin: cloud.terraform.terraform_provider
+project_path: ../terraform/infastructure

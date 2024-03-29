@@ -1,4 +1,5 @@
-- hosts: all
+- hosts: inetsim
+  name: INETSIM state
   gather_facts: true
   roles:
     - inetsim-state

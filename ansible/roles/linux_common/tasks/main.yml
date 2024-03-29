@@ -2,4 +2,8 @@
 
 - name: Set Hostname
   ansible.builtin.include_tasks: set-hostname.yml
-  when: set_hostname == "1"
+  when: set_hostname == 1
+
+- name: Common Utils
+  ansible.builtin.include_tasks: common-utils.yml
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')

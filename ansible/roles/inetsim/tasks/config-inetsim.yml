@@ -13,7 +13,7 @@
     path: /etc/inetsim/inetsim.conf
     regexp: "^start_service https"
     replace: "#start_service https"
-  when: polar_proxy == "1"
+  when: polar_proxy == 1
 
 - name: Start Service
   become: true

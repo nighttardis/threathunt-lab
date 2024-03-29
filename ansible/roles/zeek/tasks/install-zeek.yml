@@ -34,12 +34,38 @@
     state: present
   register: zeek_update
 
+#- name: Install HTTP/2.0 Parser
+#  become: true
+#  ansible.builtin.shell: /opt/zeek/bin/zkg install --force zeek/mitrecnd/bro-http2
+#  when: zeek_update.changed
+
+- name: Clone HTTP/2.0 Parser
+  ansible.builtin.git:
+    repo: "https://github.com/MITRECND/bro-http2.git"
+    dest: "/home/packer/src"
+
+- name: Update CMake versions for HTTP/2.0 Parser
+  ansible.builtin.shell:
+    cmd: sed -i /cmake_minimum_required\(VERSIO\s3\.5\sFATAL_ERROR\)/cmake_minimum_required\(VERSION\s3\.15\sFATAL_ERROR\)/ CMakeLists.txt
+    chdir: /home/packer/src/bro-http2
+
+- name: Make Commit for HTTP/2.0 Parser
+  ansible.builtin.shell: 
+    chdir: /home/packer/src/bro-http2
+    cmd: git config user.email tmp@tmp.tmp && git commit CMakeLists.txt -m temp
+
 - name: Install HTTP/2.0 Parser
   become: true
-  ansible.builtin.shell: /opt/zeek/bin/zkg install --force zeek/mitrecnd/bro-http2
-  when: zeek_update.changed
+  ansible.builtin.shell: 
+    chdir: /home/packer/src/bro-http2
+    cmd: /opt/zeek/bin/zkg install --force .
 
 - name: Install JA3
   become: true
   ansible.builtin.shell: /opt/zeek/bin/zkg install --force ja3
+  when: zeek_update.changed
+
+- name: Install JA4
+  become: true
+  ansible.builtin.shell: /opt/zeek/bin/zkg install --force zeek/foxio/ja4
   when: zeek_update.changed

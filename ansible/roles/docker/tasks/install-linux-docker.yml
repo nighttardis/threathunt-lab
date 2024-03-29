@@ -3,23 +3,20 @@
 - name: Install Docker Prerequisites
   become: true
   ansible.builtin.apt:
-    state: latest
+    state: latest # noqa package-latest
     name:
-      - ca-certificates
-      - curl
-      - gnupg2
-      - lsb-release
       - python3-pip
+    update_cache: true
 
 - name: Add Docker CE key
   become: true
-  apt_key:
+  ansible.builtin.apt_key:
     url: https://download.docker.com/linux/ubuntu/gpg
     state: present
 
 - name: Add Docker Repo
   become: true
-  apt_repository:
+  ansible.builtin.apt_repository:
     repo: "deb [arch=amd64] https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable"
     state: present
     update_cache: yes
@@ -27,7 +24,7 @@
 - name: Install Docker
   become: true
   ansible.builtin.apt:
-    state: latest
+    state: latest # noqa package-latest
     name:
       - docker-ce
       - docker-ce-cli
@@ -37,7 +34,7 @@
 - name: Install Docker SDK for Python
   become: true
   ansible.builtin.pip:
-    state: latest
+    state: latest # noqa package-latest
     name: docker>=5.0.0
 
 - name: Enable Docker service
@@ -45,4 +42,4 @@
   ansible.builtin.systemd:
     name: docker
     state: started
-    enabled: yes
+    enabled: true

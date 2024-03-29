@@ -1,5 +1,8 @@
 ---
 
+- name: Force Handlers to run
+  meta: flush_handlers
+
 - name: Reboot
   become: true
   ansible.builtin.reboot:

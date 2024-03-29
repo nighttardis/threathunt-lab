@@ -1,4 +1,5 @@
-- hosts: all
+- name: Setup INETSIM host
+  hosts: inetsim_role
   gather_facts: true
   vars:
     hostname: inetsim
@@ -8,13 +9,14 @@
     inetsim: 1
     set_hostname: 0
     setup_gateway: 1
+    elastic_oss: 0
   roles:
     - linux_common
     - inetsim
     - polarproxy
     - tcpreplay
-    - zeek
     - gateway
     - elastic_repo
     - filebeat
+    - zeek
     - reboot

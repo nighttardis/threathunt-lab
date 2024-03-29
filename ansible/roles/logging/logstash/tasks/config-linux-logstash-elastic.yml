@@ -1,14 +1,28 @@
-- name: Set Elasticsearch logstash password
+---
+
+- name: Create ElastichSearch Logstash Role
   ansible.builtin.uri:
-    url: https://127.0.0.1:9200/_security/user/logstash_system/_password
+    url: https://127.0.0.1:9200/_security/role/logstash_role
     ca_path: '/opt/elasticsearch/config/certs/ca/ca.crt'
-    return_content: true
+    user: "elastic"
+    password: "{{ lookup('community.hashi_vault.vault_kv2_get', 'elastic', engine_mount_point='secrets')['secret']['elasticsearch'] }}"
+    method: POST
+    body_format: "json"
+    body:
+      cluster: ["all"]
+      indices: [{"names":["*"],"privileges":["create_index","create_doc","write"]}]
+
+- name: Create ElasticSearch Logstash User
+  ansible.builtin.uri:
+    url: https://127.0.0.1:9200/_security/user/l
+    ca_path: '/opt/elasticsearch/config/certs/ca/ca.crt'
     user: "elastic"
     password: "{{ lookup('community.hashi_vault.vault_kv2_get', 'elastic', engine_mount_point='secrets')['secret']['elasticsearch'] }}"
     method: POST
     body_format: "json"
     body:
       password: "{{ lookup('community.hashi_vault.vault_kv2_get', 'elastic', engine_mount_point='secrets')['secret']['logstash'] }}"
+      roles: ["logstash_role","logstash_system"]
 
 - name: Set Elasticsearch Default ILM (7 day)
   ansible.builtin.uri:
@@ -42,7 +56,7 @@
     method: PUT
     body_format: "json"
     body: "{{ lookup('file', 'elastic/template/winlogbeat.json') }}"
-  
+
 - name: Set Elasticsearch Filebeat template
   ansible.builtin.uri:
     url: https://127.0.0.1:9200/_index_template/filebeat_template

@@ -1,19 +1,11 @@
 ---
 
-- name: Install iptables
-  become: true
-  ansible.builtin.apt:
-    name:
-      - iptables
-      - iptables-persistent
-    state: present
-
-- name: Masquerade ens18
+- name: Masquerade eth0
   become: true
   ansible.builtin.iptables:
     chain: POSTROUTING
     table: nat
-    out_interface: ens18
+    out_interface: eth0
     jump: MASQUERADE
   notify: Save iptables
 
@@ -39,11 +31,11 @@
     jump: ACCEPT
   notify: Save iptables
 
-- name: Accept ens18
+- name: Accept eth0
   become: true
   ansible.builtin.iptables:
     chain: INPUT
-    in_interface: ens18
+    in_interface: eth0
     ctstate:
       - RELATED
       - ESTABLISHED

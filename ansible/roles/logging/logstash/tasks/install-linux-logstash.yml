@@ -1,0 +1,25 @@
+---
+
+- name: Install Logstash-OSS
+  become: true
+  ansible.builtin.apt:
+    name: logstash-oss
+    update_cache: true
+    state: present
+  register: logstash
+  when: "'logstash_oss_role' in group_names"
+
+- name: Install Logstash
+  become: true
+  ansible.builtin.apt:
+    name: logstash
+    update_cache: true
+    state: present
+  register: logstash
+  when: "'logstash_role' in group_names"
+
+- name: Install OpenSearch Logstash
+  become: true
+  ansible.builtin.shell:
+    cmd: "/usr/share/logstash/bin/logstash-plugin install logstash-output-opensearch"
+  when: "'opensearch_output_role' in group_names or ('opensearch_output_role' in group_names and logstash.changed)"

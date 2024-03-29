@@ -38,6 +38,7 @@
       @load tuning/json-logs
       @load http2
       @load ja3
+      @load ja4
   notify: Deploy zeek config
 
 - name: Start Zeek service
@@ -51,9 +52,10 @@
   become: true
   ansible.builtin.shell: filebeat modules enable zeek
   notify: Restart Filebeat
-  when: zeek_filebeat=='1'
+  when: zeek_filebeat==1
 
 - name: Zeek Filebeat Configure
+  become: true
   ansible.builtin.copy:
     src: filebeat/zeek.yml
     dest: /etc/filebeat/modules.d/zeek.yml
@@ -61,4 +63,4 @@
     group: root
     mode: 0644
   notify: Restart Filebeat
-  when: zeek_filebeat=='1'
+  when: zeek_filebeat==1

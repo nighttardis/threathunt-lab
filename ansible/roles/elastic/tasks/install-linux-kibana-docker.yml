@@ -33,9 +33,9 @@
       - 5601:5601
     volumes:
       - elasticsearch-certs:/usr/share/kibana/config/certs
-  when: elastic_non_oss == '1'
+  when: "'elastic_role' in group_names and 'elastic_oss_role' not in group_names"
 
-- name: Kibana NonOSS Docker
+- name: Kibana OSS Docker
   become: true
   community.docker.docker_container:
     name: kibana
@@ -54,4 +54,4 @@
       - elasticsearch-certs:/usr/share/elastic-certs
     ports:
       - 5601:5601
-  when: elastic_oss == '1'
+  when: "'elastic_oss_role' in group_names"

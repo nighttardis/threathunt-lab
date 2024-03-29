@@ -3,6 +3,6 @@ instances:
     dns:
       - elasticsearch
       - localhost
-      - ubuntu-logger
+      - logger
     ip:
       - 127.0.0.1

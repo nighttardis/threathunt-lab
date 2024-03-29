@@ -1,0 +1,27 @@
+output {
+{% if logscale_filter is defined %}
+{% for filter in logscale_filter %}
+    if {{ filter }} {
+        opensearch {
+            hosts => ["{{ logscale_host }}"]
+            user => "{{ lookup('community.hashi_vault.vault_kv2_get', 'logscale', engine_mount_point='secrets')['secret']['repo'] }}"
+            password => "{{ lookup('community.hashi_vault.vault_kv2_get', 'logscale', engine_mount_point='secrets')['secret']['password'] }}"
+            ssl => true
+            ssl_certificate_verification => true
+            manage_template => false
+            http_compression => true
+        }
+    }
+{% endfor %}
+{% else %}
+    opensearch {
+        hosts => ["{{ logscale_host }}"]
+        user => "{{ lookup('community.hashi_vault.vault_kv2_get', 'logscale', engine_mount_point='secrets')['secret']['repo'] }}"
+        password => "{{ lookup('community.hashi_vault.vault_kv2_get', 'logscale', engine_mount_point='secrets')['secret']['password'] }}"
+        ssl => true
+        ssl_certificate_verification => true
+        manage_template => false
+        http_compression => true
+    }
+{% endif %}
+}

@@ -1,10 +1,16 @@
 ---
 - name: Setup DHCPD
   ansible.builtin.include_tasks: setup-dhcpd.yml
-  when: setup_gateway == "1"
-- name: Setup iptables
+  when: setup_gateway == 1
+- name: Install IPTables
+  ansible.builtin.include_tasks: install-iptables.yml
+  when: setup_gateway == 1
+- name: Setup Custom IPTables rules
+  ansible.builtin.include_tasks: setup-iptables-custom.yml # This is for any custom rules that are needed for your own environment
+  when: setup_gateway == 1
+- name: Setup Default IPTables rules
   ansible.builtin.include_tasks: setup-iptables.yml
-  when: setup_gateway == "1"
+  when: setup_gateway == 1
 - name: Setup IP Forwarding
   ansible.builtin.include_tasks: setup-ip-forwarding.yml
-  when: setup_gateway == "1"
+  when: setup_gateway == 1

@@ -1,9 +1,15 @@
 ---
 
+- name: PolarProxy Installed
+  ansible.builtin.stat:
+    path: /usr/local/bin/PolarProxy
+  register: polarProxyInstalled
+
 - name: Download polarproxy
   ansible.builtin.get_url:
     url: https://www.netresec.com/?download=PolarProxy
     dest: /tmp/PolarProxy.tar.gz
+  when: not polarProxyInstalled.stat.exists
 
 - name: Create Dir for PolarProxy
   become: true
@@ -13,6 +19,7 @@
     owner: root
     group: root
     mode: 0644
+  when: not polarProxyInstalled.stat.exists
 
 - name: Install PolarProxy
   become: true
@@ -20,6 +27,7 @@
     remote_src: yes
     src: /tmp/PolarProxy.tar.gz
     dest: /usr/local/bin/PolarProxy
+  when: not polarProxyInstalled.stat.exists
 
 - name: Create log dir for polarproxy
   become: true
@@ -29,6 +37,7 @@
     owner: root
     group: root
     mode: 0644
+  when: not polarProxyInstalled.stat.exists
 
 - name: Add service file for polaryproxy
   become: true
@@ -38,6 +47,7 @@
     owner: root
     group: root
     mode: 0644
+  when: not polarProxyInstalled.stat.exists
 
 - name: Add PolarProxy+Inetsim service file
   become: true
@@ -47,6 +57,7 @@
     owner: root
     group: root
     mode: 0644
+  when: not polarProxyInstalled.stat.exists
 
 - name: Start service
   become: true

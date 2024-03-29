@@ -49,6 +49,12 @@
     - /opt/elasticsearch/config
     - /opt/elasticsearch/config/certs
 
+- name: Put instances.yml
+  become: true
+  ansible.builtin.copy:
+    src: instances.yml
+    dest: /opt/elasticsearch/config/certs/instances.yml
+
 - name: Setup ELK Volumes (docker)
   become: true
   community.docker.docker_volume:
@@ -85,13 +91,13 @@
           unzip config/certs/certs.zip -d config/certs;
         fi
       '
-  when: elastic_non_oss == '1'
+  when: "'elastic_role' in group_names"
 
 - name: Wait for Certs
   ansible.builtin.wait_for:
     path: /opt/elasticsearch/config/certs/elasticsearch
     state: present
-  when: elastic_non_oss == '1'
+  when: "'elastic_role' in group_names"
 
 - name: Set Permissions
   become: true
@@ -100,7 +106,7 @@
     path: "/opt/elasticsearch/config/certs"
     owner: root
     group: root
-  when: elastic_non_oss == '1'
+  when: "'elastic_role' in group_names"
 
 - name: Elastic NonOSS Docker
   become: true
@@ -121,7 +127,7 @@
       node.name: elasticsearch
       discovery.type: 'single-node'
       bootstrap.memory_lock: "true"
-      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+      ES_JAVA_OPTS: "-Xms512m -Xmx2048m"
       xpack.security.enabled: "true"
       xpack.security.http.ssl.enabled: "true"
       xpack.security.http.ssl.key: "certs/elasticsearch/elasticsearch.key"
@@ -140,7 +146,7 @@
     ulimits:
       - 'memlock:-1:-1'
       - 'nofile:65536:65536'
-  when: elastic_non_oss == '1'
+  when: "'elastic_role' in group_names"
 
 - name: Elastic OSS Docker
   become: true
@@ -166,7 +172,7 @@
     ulimits:
       - 'memlock:-1:-1'
       - 'nofile:65536:65536'
-  when: elastic_oss == '1'
+  when: "'elastic_oss_role' in group_names"
 
 - name: Wait for Elasticsearch
   ansible.builtin.uri:

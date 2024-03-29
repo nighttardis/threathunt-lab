@@ -1,0 +1,12 @@
+---
+- name: Install Common Utils
+  become: true
+  ansible.builtin.apt:
+    state: latest # noqa package-latest
+    name:
+      - ca-certificates
+      - curl
+      - gnupg2
+      - lsb-release
+      - parted
+    update_cache: true
