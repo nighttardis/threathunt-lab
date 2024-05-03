@@ -17,6 +17,7 @@
   chocolatey.chocolatey.win_chocolatey:
     name: googlechrome
     state: present
+    ignore_checksums: true
 
 - name: Install 7zip
   chocolatey.chocolatey.win_chocolatey:
@@ -43,8 +44,8 @@
     path: https://github.com/PowerShell/PowerShell/releases/download/v7.3.6/PowerShell-7.3.6-win-x64.msi
     state: present
     arguments:
-      /quiet 
-      ADD_EXPLORER_CONTEXT_MENU_OPENPOWERSHELL=1 
-      ADD_FILE_CONTEXT_MENU_RUNPOWERSHELL=1 
-      REGISTER_MANIFEST=1 
+      /quiet
+      ADD_EXPLORER_CONTEXT_MENU_OPENPOWERSHELL=1
+      ADD_FILE_CONTEXT_MENU_RUNPOWERSHELL=1
+      REGISTER_MANIFEST=1
       ADD_PATH=1

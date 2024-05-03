@@ -1,0 +1,12 @@
+---
+
+- name: Ensure Chocolatey installed
+  chocolatey.chocolatey.win_chocolatey:
+    name: chocolatey
+    state: present
+    source: https://community.chocolatey.org/install.ps1
+
+- name: Install Office Pro Plus 2019 64 bit
+  chocolatey.chocolatey.win_chocolatey:
+    name: microsoft-office-deployment
+    package_params: "/64bit /Product:ProPlus2019Volume /Exclude:Lync,Groove"

@@ -2,7 +2,7 @@
 
 - name: Install Sysmon
   ansible.builtin.include_tasks: windows-install-sysmon.yml
-  when: '"Windows" in ansible_distribution and win_install_sysmon == "1"'
+  when: '"Windows" in ansible_distribution and win_install_sysmon'
 
 - name: Deploy Config
   ansible.builtin.include_tasks: windows-config-sysmon.yml

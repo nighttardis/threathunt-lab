@@ -1,1 +1,3 @@
 ansible/roles/elastic/tasks/install-linux-kibana.yaml yaml[line-length]
+ansible/playbooks/windows_client.yml yaml[line-length]
+ansible/roles/winlogbeat/tasks/windows-install-oss-winlogbeat.yml yaml[line-length]

@@ -9,12 +9,12 @@
   ansible.windows.win_get_url:
     url: 'http://{{ polarproxyhost }}:{{ polarproxycaport }}/polarproxy.cer'
     dest: 'c:\polarproxy.cer'
-  when: polarproxy == '1'
+  when: polarproxy == 1
 
 - name: Add PolarProxy CA
   ansible.windows.win_powershell:
     script: Import-Certificate -FilePath "C:\polarproxy.cer" -CertStoreLocation Cert:\LocalMachine\Root
-  when: polarproxy == '1'
+  when: polarproxy == 1
 
 # This should be set before running the win_inet_proxy module
 # - name: Configure IE proxy settings to apply to all users

@@ -1,0 +1,5 @@
+---
+- name: Disable telemetry
+  ansible.builtin.include_tasks: disable_telemetry.yml
+- name: Privacy hardening
+  ansible.builtin.include_tasks: setup_privacy.yml

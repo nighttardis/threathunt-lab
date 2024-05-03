@@ -3,4 +3,4 @@
     src: winlogbeat-logstash.yml.j2
     dest: "{{ winlogbeat_install_location }}/{{ winlogbeat_download_file | replace('oss-', '') }}/winlogbeat.yml"
   notify: Restart Windows Winlogbeat
-  when: winlogbeat_logstash == '1'
+  when: winlogbeat_logstash == 1

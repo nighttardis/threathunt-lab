@@ -1,24 +1,58 @@
+# Load datas
+- name: Load data
+  import_playbook: data.yml
+  vars:
+    data_path: "../../data/"
+  tags:
+    - always
+
 - name: WindowsClient
-  hosts: all
+  hosts: windows_client
   gather_facts: true
   vars:
     ansible_connection: winrm
+    ansible_user: "{{ lab.hosts[os][os_type][vm_count].winrm_user | default(lab.hosts[os].winrm_user) }}"
+    ansible_password: "{{ lab.hosts[os][os_type][vm_count].winrm_password | default(lab.hosts[os].winrm_password) }}"
     ansible_winrm_server_cert_validation: ignore
-    verbose_win_security_logging: 0
-    win_4688_cmd_line: 0
-    win_sysmon_template: sysmon-config-swift.xml
-    win_sysmon_version: "15.0"
-    win_install_sysmon: "0"
-    win_install_sysinternals: "0"
+    verbose_win_security_logging: "{{ lab.hosts[os][os_type][vm_count].logging_verbose_security | default(lab.hosts[os].logging_verbose_security) }}"
+    win_4688_cmd_line: "{{ lab.hosts[os][os_type][vm_count].logging_4688 | default(lab.hosts[os].logging_4688) }}"
+    win_sysmon_template: "{{ lab.hosts[os][os_type][vm_count].sysmon_template_file | default(lab.hosts[os].sysmon_template_file) }}"
+    win_sysmon_version: "{{ lab.hosts[os][os_type][vm_count].sysmon_version | default(lab.hosts[os].sysmon_version) }}"
+    win_install_sysmon: lab.hosts[os][os_type][vm_count].install_sysmon | default(lab.hosts[os].install_sysmon) | bool
+    win_install_sysinternals: "{{ lab.hosts[os][os_type][vm_count].install_sysinternals | default(lab.hosts[os].install_sysinternals) }}"
     win_sysinternal_url: "https://download.sysinternals.com/files/SysinternalsSuite.zip"
-    win_install_oss_winlogbeat: "0"
+    win_install_oss_winlogbeat: lab.hosts[os][os_type][vm_count].install_oss_winlogbeat | default(lab.hosts[os].install_oss_winlogbeat) | bool
     winlogbeat_install_location: "c:/program files/ansible/winlogbeat"
-    winlogbeat_download_file: "winlogbeat-oss-8.9.1-windows-x86_64"
-    winlogbeat_logstash: "0"
+    winlogbeat_download_file: "winlogbeat-oss-8.13.1-windows-x86_64"
     winlogbeat_download_url_base: "https://artifacts.elastic.co/downloads/beats/winlogbeat/"
-    polarproxy: "0"
+    polarproxy: 1
+    polarproxyhost: "10.0.1.2"
+    polarproxycaport: "10080"
+    logstash_host: "10.0.1.3"
+    logstash_port: "5044"
+    winlogbeat_logstash: 1
+    disable_telemetry_policy: lab.hosts[os][os_type][vm_count].disable_telemetry_policy | default(lab.hosts[os].disable_telemetry_policy)
+    disable_search_web_results: lab.hosts[os][os_type][vm_count].disable_search_web_results | default(lab.hosts[os].disable_search_web_results)
+    disable_web_language_list_access: lab.hosts[os][os_type][vm_count].disable_web_language_list_access | default(lab.hosts[os].disable_web_language_list_access)
+    disable_location_aware_printing: lab.hosts[os][os_type][vm_count].disable_location_aware_printing | default(lab.hosts[os].disable_location_aware_printing)
+    disable_keyboard_telemetry: lab.hosts[os][os_type][vm_count].disable_keyboard_telemetry | default(lab.hosts[os].disable_keyboard_telemetry)
+    disable_advertising_id: lab.hosts[os][os_type][vm_count].disable_advertising_id | default(lab.hosts[os].disable_advertising_id)
+    disable_smartscreen_web_filter: lab.hosts[os][os_type][vm_count].disable_smartscreen_web_filter | default(lab.hosts[os].disable_smartscreen_web_filter)
+    disable_microsoft_account_settings_sync: lab.hosts[os][os_type][vm_count].disable_microsoft_account_settings_sync | default(lab.hosts[os].disable_microsoft_account_settings_sync)
+    disable_cortana_personalization: lab.hosts[os][os_type][vm_count].disable_cortana_personalization | default(lab.hosts[os].disable_cortana_personalization)
+    disable_contact_harvesting: lab.hosts[os][os_type][vm_count].disable_contact_harvesting | default(lab.hosts[os].disable_contact_harvesting)
+    disable_input_personalization: lab.hosts[os][os_type][vm_count].disable_input_personalization | default(lab.hosts[os].disable_input_personalization)
+    harden_microsoft_edge: lab.hosts[os][os_type][vm_count].harden_microsoft_edge | default(lab.hosts[os].harden_microsoft_edge)
+    disable_location_sensor: lab.hosts[os][os_type][vm_count].disable_location_sensor | default(lab.hosts[os].disable_location_sensor)
+    disable_windows_defender_sample_submission: lab.hosts[os][os_type][vm_count].disable_windows_defender_sample_submission | default(lab.hosts[os].disable_windows_defender_sample_submission)
+    disable_default_background_access: lab.hosts[os][os_type][vm_count].disable_default_background_access | default(lab.hosts[os].disable_default_background_access)
+    disable_unpaired_information_sharing: lab.hosts[os][os_type][vm_count].disable_unpaired_information_sharing | default(lab.hosts[os].disable_unpaired_information_sharing)
+    hostname: "{{ lab.hosts[os][os_type][vm_count].hostname | default(omit) }}"
+    install_office: lab.hosts[os][os_type][vm_count].install_office | default(omit)
   roles:
-    - windows_common
-    - sysmon
-    - sysinternals
-    - winlogbeat
+    - {role: 'windows_common' }
+    - {role: 'windows_debloat' }
+    - {role: 'sysmon', tags: 'sysmon' }
+    - {role: 'sysinternals', tags: 'sysinternals' }
+    - {role: 'winlogbeat', tags: 'winlogbeat'}
+    - {role: 'office', tags: ['never', 'office'], when: install_office is defined}

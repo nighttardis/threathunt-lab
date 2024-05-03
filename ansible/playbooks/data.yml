@@ -5,7 +5,7 @@
   vars_files:
     - "{{data_path}}/config.json"
   tasks:
-    - name: save the Json data to a Variable as a Fact
-      set_fact:
-        lab: "{{lab}}"
-        cacheable: yes
+    - name: Save the Json data to a Variable as a Fact
+      ansible.builtin.set_fact:
+        lab: "{{ lab }}"
+        cacheable: true

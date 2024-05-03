@@ -1,19 +1,28 @@
+- name: Check if winlogbeat is already installed
+  ansible.windows.win_stat:
+    path: "{{ winlogbeat_install_location }}/{{ winlogbeat_download_file | replace('oss-', '') }}"
+  register: winlogdir
+
 - name: Recreate directory
   ansible.windows.win_file:
     path: "{{ winlogbeat_install_location }}"
     state: directory
+  when: not winlogdir.stat.exists
 
 - name: Get winlogbeat zip
   ansible.windows.win_get_url:
     url: "{{ winlogbeat_download_url_base }}{{ winlogbeat_download_file }}.zip"
     dest: "{{ winlogbeat_install_location }}/{{ winlogbeat_download_file }}.zip"
+  when: not winlogdir.stat.exists
 
 - name: Unzip winlogbeat
   community.windows.win_unzip:
     src: "{{ winlogbeat_install_location }}/{{ winlogbeat_download_file }}.zip"
     dest: "{{ winlogbeat_install_location }}"
+  when: not winlogdir.stat.exists
 
 - name: Install the service via script
-  ansible.windows.win_command: powershell.exe -ExecutionPolicy ByPass -File "{{ winlogbeat_install_location }}/{{ winlogbeat_download_file | replace('oss-', '')}}/install-service-winlogbeat.ps1"
+  ansible.windows.win_command: powershell.exe -ExecutionPolicy ByPass -File "{{ winlogbeat_install_location }}/{{ winlogbeat_download_file | replace('oss-', '') }}/install-service-winlogbeat.ps1"
   args:
     chdir: "{{ winlogbeat_install_location }}/{{ winlogbeat_download_file | replace('oss-', '') }}"
+  when: not winlogdir.stat.exists

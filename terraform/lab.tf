@@ -26,6 +26,14 @@ variable "windows_office_client_source" {
     type = string
 }
 
+variable "windows_client_22H2_source" {
+    type = string
+}
+
+variable "windows_server_2022_source" {
+    type = string
+}
+
 variable "isolated_network_bridge" {
     type = string
 }
@@ -296,7 +304,7 @@ resource "proxmox_vm_qemu" "ubuntu-logger-elastic" {
     cpu = "host"    
     
     # VM Memory Settings
-    memory = 2048
+    memory = 3072
 
     disk {
         size = "64G"
@@ -538,5 +546,109 @@ resource "proxmox_vm_qemu" "windows-office-client" {
     #     working_dir = "../ansible"
     #     command = "ansible-venv/bin/ansible-playbook -i '${self.ssh_host},' --extra-vars 'ansible_user=vagrant ansible_password=vagrant verbose_win_security_logging=${var.verbose_win_security_logging} win_sysmon_url=${var.win_sysmon_url} win_install_sysmon=${var.win_install_sysmon} win_sysmon_template=${var.win_sysmon_template} win_4688_cmd_line=${var.win_4688_cmd_line} win_sysinternal_url=${var.win_sysinternal_url} win_install_sysinternals=${var.win_install_sysinternals} polarproxy=${var.win_polarproxy} polarproxyhost=${var.win_polarproxyhost} polarproxycaport=${var.win_polarproxycaport} winlogbeat_download_file=${var.winlogbeat_download_file} logstash_port=${var.logstash_port} logstash_host=${var.logstash_host} file_ext=${var.winlogbeat_file_ext} winlogbeat_download_url_base=${var.winlogbeat_download_url_base} winlogbeat_install_location=\"${var.winlogbeat_install_location}\" win_install_winlogbeat=${var.win_install_winlogbeat} winlogbeat_logstash=${var.winlogbeat_logstash}' playbooks/windows_client.yml"
     # }
+
+}
+
+resource "proxmox_vm_qemu" "windows-client-22H2" {
+    count=1
+    # VM General Settings
+    target_node = var.proxmox_host
+    vmid = 330 - (count.index)
+    name = "win10-22H2-${count.index}"
+
+    # VM Advanced General Settings
+    onboot = false 
+    automatic_reboot = false
+
+    # VM OS Settings
+    clone = var.windows_client_22H2_source
+
+    # VM System Settings
+    agent = 1
+    
+    # VM CPU Settings
+    cores = 2
+    sockets = 2
+    cpu = "host"    
+    
+    # VM Memory Settings
+    memory = 4096
+
+    # VM Network Settings
+    network {
+        bridge = var.isolated_network_bridge
+        model  = "e1000"
+    }
+
+    lifecycle {
+        ignore_changes = [
+            network, qemu_os, desc, disk, numa, scsihw, clone_wait, additional_wait, automatic_reboot, 
+        ]
+    }
+
+    
+    provisioner "local-exec" {
+        working_dir = "../ansible"
+        command = "ansible-venv/bin/ansible-playbook -i '${self.ssh_host},' --extra-vars 'ansible_user=vagrant ansible_password=vagrant verbose_win_security_logging=${var.verbose_win_security_logging}  win_install_sysmon=${var.win_install_sysmon} win_4688_cmd_line=${var.win_4688_cmd_line} win_install_sysinternals=${var.win_install_sysinternals} polarproxy=${var.win_polarproxy} polarproxyhost=${var.win_polarproxyhost} polarproxycaport=${var.win_polarproxycaport} logstash_port=${var.logstash_port} logstash_host=${var.logstash_host} win_install_oss_winlogbeat=${var.win_install_winlogbeat} winlogbeat_logstash=${var.winlogbeat_logstash}' playbooks/windows_client.yml"
+    }
+
+}
+
+resource "proxmox_vm_qemu" "windows-server-2022-domain-controller" {
+    count=1
+    # VM General Settings
+    target_node = var.proxmox_host
+    vmid = 410 - (count.index)
+    name = "roccinante"
+    desc = "lab-dc01"
+
+    # VM Advanced General Settings
+    onboot = false 
+    automatic_reboot = false
+
+    # VM OS Settings
+    clone = var.windows_server_2022_source
+
+    # VM System Settings
+    agent = 1
+    
+    # VM CPU Settings
+    cores = 2
+    sockets = 2
+    cpu = "host"    
+    
+    # VM Cloud-Init Settings
+    # os_type = "cloud-init"
+
+    # (Optional) IP Address and Gateway
+    # ipconfig0 = "ip=0.0.0.0/0,gw=0.0.0.0"
+    ipconfig0 = "ip=10.0.1.60/24,gw=10.0.1.2"
+    nameserver = "192.168.0.153"
+
+    # VM Memory Settings
+    memory = 4096
+
+    # VM Network Settings
+    network {
+        bridge = var.isolated_network_bridge
+        model  = "e1000"
+    }
+
+    # network {
+    #     bridge = var.public_network_bridge
+    #     model  = "e1000"
+    # }
+
+    lifecycle {
+        ignore_changes = [
+            network, qemu_os, desc, disk, numa, scsihw, clone_wait, additional_wait, automatic_reboot, 
+        ]
+    }
+
+    
+    provisioner "local-exec" {
+        working_dir = "../ansible"
+        command = "ansible-venv/bin/ansible-playbook -i '10.0.1.60,' --extra-vars 'ansible_user=vagrant ansible_password=vagrant host_key=${self.name}' playbooks/windows_server.yml"
+    }
 
 }
