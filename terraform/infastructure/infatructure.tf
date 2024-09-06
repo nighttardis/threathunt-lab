@@ -128,7 +128,7 @@ resource "proxmox_vm_qemu" "debian-logger-elastic" {
             sata0 {
                 disk {
                     storage = "local-lvm"
-                    size = "20"
+                    size = "35"
                     backup = "false"
                     discard = "true"
                     emulatessd= "true"
@@ -183,5 +183,97 @@ resource "ansible_host" "debian-logger-elastic" {
         ansible_user = "packer",
         ansible_ssh_private_key_file = "~/.ssh/packer",
         ansible_host = "${proxmox_vm_qemu.debian-logger-elastic[count.index].ssh_host}"
+    }
+}
+
+resource "proxmox_vm_qemu" "debian-ext-services" {
+
+  # VM General Settings
+    target_node = var.proxmox_host
+    vmid = "302"
+    name = "ext-services"
+
+    # VM Advanced General Settings
+    onboot = false 
+    automatic_reboot = false
+
+    # VM OS Settings
+    clone = var.debian_source
+
+    # VM System Settings
+    agent = 1
+    
+    # VM CPU Settings
+    cores = 2
+    sockets = 1
+    cpu = "host"   
+    
+    # VM Memory Settings
+    memory = 2048
+
+    disks {
+        sata {
+            sata0 {
+                disk {
+                    storage = "local-lvm"
+                    size = "20"
+                    backup = "false"
+                    discard = "true"
+                    emulatessd= "true"
+                }
+            }
+        }
+    }
+
+    cloudinit_cdrom_storage = "local-lvm"
+
+    # VM Network Settings
+    network {
+        bridge = var.public_network_bridge
+        model  = "virtio"
+    }
+
+    lifecycle {
+        ignore_changes = [
+            network, qemu_os, desc, disk, numa, scsihw, clone_wait, additional_wait, automatic_reboot, 
+        ]
+    }
+
+    # VM Cloud-Init Settings
+    os_type = "cloud-init"
+
+    # (Optional) IP Address and Gateway
+    ipconfig0 = "ip=192.168.2.20/24,gw=192.168.2.1"
+    nameserver = "8.8.8.8"
+    searchdomain = ""
+
+    provisioner "remote-exec" {
+      connection {
+          type = "ssh"
+          user = "packer"
+          host = self.ssh_host
+          private_key = file("~/.ssh/packer")
+          timeout = "10m"
+        }
+        on_failure = continue
+        inline = [ 
+            "echo \"    dns-nameservers ${proxmox_vm_qemu.debian-ext-services.nameserver}\" | sudo tee -a /etc/network/interfaces.d/50-cloud-init",
+            "sleep 60",
+            "sudo apt -y install resolvconf",
+            "sudo reboot" 
+         ]
+    }
+
+}
+
+resource "ansible_host" "debian-ext-services" {
+
+    name = proxmox_vm_qemu.debian-ext-services.name
+    groups = ["linux","ext_service"]
+    variables = {
+        vmid = "${proxmox_vm_qemu.debian-ext-services.vmid}"
+        ansible_user = "packer",
+        ansible_ssh_private_key_file = "~/.ssh/packer",
+        ansible_host = "${proxmox_vm_qemu.debian-ext-services.ssh_host}"
     }
 }

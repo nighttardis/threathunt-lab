@@ -1,0 +1,7 @@
+---
+
+- name: Restart named
+  become: true
+  ansible.builtin.systemd:
+    name: named
+    state: restarted

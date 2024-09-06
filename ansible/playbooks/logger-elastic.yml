@@ -8,7 +8,7 @@
     logstash_logscale: '1'
   roles:
     - {role: 'linux_common' }
-    - {role: 'docker' }
-    - {role: 'elastic_repo' }
-    - {role: 'elastic' }
-    - {role: 'logging/logstash' }
+    - {role: 'docker', tags: ["docker"] }
+    - {role: 'elastic_repo', tags: ["elastic"] }
+    - {role: 'elastic', tags: ["elastic"] }
+    - {role: 'logging/logstash', tags: ["logstash"] }

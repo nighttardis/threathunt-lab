@@ -1,0 +1,8 @@
+- name: Setup External Services host
+  hosts: ext_service
+  gather_facts: true
+  vars:
+    set_hostname: '0'
+  roles:
+    - { role: 'linux_common' }
+    - { role: 'linux_ext_services' }

@@ -216,3 +216,75 @@ resource "ansible_host" "windows-11-pro-client" {
       os_type = "pro11"
     }
 }
+
+resource "proxmox_vm_qemu" "windows-11-pro-client-custom" {
+    count=var.windows_11_pro_c_count
+    # VM General Settings
+    target_node = var.proxmox_host
+    vmid = 360 - (count.index)
+    name = "win11-pro-c-${count.index}"
+    qemu_os = "win11"
+
+    bios = "ovmf"
+
+    # VM Advanced General Settings
+    onboot = false 
+    automatic_reboot = false
+
+    # VM OS Settings
+    clone = var.windows_11_pro_client_source
+
+    # VM System Settings
+    agent = 1
+    
+    # VM CPU Settings
+    cores = 2
+    sockets = 2
+    cpu = "host"    
+    
+    # VM Memory Settings
+    memory = 4096
+    balloon = 2048
+
+    # VM Network Settings
+    network {
+        bridge = var.isolated_network_bridge
+        model  = "e1000"
+    }
+
+    lifecycle {
+        ignore_changes = [
+            network, qemu_os, desc, disk, numa, scsihw, clone_wait, additional_wait, automatic_reboot, machine,
+        ]
+    }
+
+    scsihw = "virtio-scsi-single"
+
+    disks {
+        scsi {
+            scsi0 {
+                disk {
+                    storage = "local-lvm"
+                    size = "100"
+                    backup = "false"
+                    discard = "true"
+                    emulatessd= "true"
+                }
+            }
+        }
+    }
+  
+}
+
+resource "ansible_host" "windows-11-pro-client-custom" {
+    count = var.windows_11_pro_c_count
+    name = proxmox_vm_qemu.windows-11-pro-client-custom[count.index].name
+
+    groups = ["windows_client","windows_11_pro"]
+    variables = {
+      ansible_host = "${proxmox_vm_qemu.windows-11-pro-client-custom[count.index].ssh_host}"
+      vm_count = count.index
+      os = "win"
+      os_type = "pro11c"
+    }
+}

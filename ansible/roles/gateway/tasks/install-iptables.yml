@@ -6,3 +6,18 @@
       - iptables
       - iptables-persistent
     state: present
+
+- name: Clear iptables
+  become: true
+  ansible.builtin.iptables:
+    chain: "{{ item }}"
+    flush: yes
+  with_items:  [ 'INPUT', 'FORWARD', 'OUTPUT' ]
+
+- name: Clear iptables
+  become: true
+  ansible.builtin.iptables:
+    chain: "{{ item }}"
+    flush: yes
+    table: nat
+  with_items:  [ 'PREROUTING', 'POSTROUTING' ]

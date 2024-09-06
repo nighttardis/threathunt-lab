@@ -1,0 +1,57 @@
+---
+
+- name: Deploy config
+  become: true
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "/etc/logstash/conf.d/{{ item }}"
+    owner: root
+    group: logstash
+    mode: 0640
+  with_items:
+    - 01-input-beats.conf
+  notify: Restart Logstash
+
+- name: Deploy template config for Splunk
+  become: true
+  ansible.builtin.template:
+    src: 21-output-tcp.conf.j2
+    dest: /etc/logstash/conf.d/21-output-tcp.conf
+    owner: root
+    group: logstash
+    mode: 0640
+  notify: Restart Logstash
+  when: "'splunk_role' in group_names"
+
+- name: Deploy template config for Elastic
+  become: true
+  ansible.builtin.template:
+    src: 20-output-elastic.conf.j2
+    dest: /etc/logstash/conf.d/20-output-elastic.conf
+    owner: root
+    group: logstash
+    mode: 0640
+  notify: Restart Logstash
+  when: ('elastic_role' in group_names or 'elastic_oss_role' in group_names)
+
+- name: Deploy template config for Logscale
+  become: true
+  ansible.builtin.template:
+    src: 22-output-logscale.conf.j2
+    dest: /etc/logstash/conf.d/22-output-logscale.conf
+    owner: root
+    group: logstash
+    mode: 0640
+  notify: Restart Logstash
+  when: logstash_logscale == "1"
+  vars:
+    logscale_filter:
+      - "[agent][name] == \"WIN-VB9FVFSHP6T\""
+      - "[event][dataset] == \"zeek.dhcp\""
+
+- name: Configure service
+  become: true
+  ansible.builtin.systemd:
+    name: logstash
+    state: started
+    enabled: yes

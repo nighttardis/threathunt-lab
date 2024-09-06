@@ -117,3 +117,9 @@ variable "windows_11_pro_count" {
     default = 0
     description = "Number of Windows 11 Clients to create" 
 }
+
+variable "windows_11_pro_c_count" {
+    type = number
+    default = 0
+    description = "Number of Windows 11 Custom Clients to create" 
+}

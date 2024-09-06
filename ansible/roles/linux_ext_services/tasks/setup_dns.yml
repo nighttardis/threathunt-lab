@@ -1,0 +1,9 @@
+---
+
+- name: Install Unbound
+  become: true
+  ansible.builtin.apt:
+    state: latest # noqa package-latest
+    name:
+      - bind9
+    update_cache: true

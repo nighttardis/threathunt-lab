@@ -1,0 +1,6 @@
+---
+
+- name: Setup DNS
+  ansible.builtin.include_tasks: setup_dns.yml
+- name: Configure DNS
+  ansible.builtin.include_tasks: configure_dns.yml
