@@ -1,0 +1,1059 @@
+{
+    "_meta": {
+        "description": "Winlog Beat Template"
+    },
+    "version": 1,
+    "template": {
+        "settings": {},
+        "mappings": {
+            "dynamic_templates": [{
+                "strings": {
+                    "match_mapping_type": "string",
+                    "runtime": {}
+                }
+            }],
+            "properties": {
+                "winlog": {
+                    "properties": {
+                        "api": {
+                            "type": "keyword"
+                        },
+                        "activity_id": {
+                            "type": "keyword"
+                        },
+                        "computer_name": {
+                            "type": "keyword"
+                        },
+                        "computerObject.domain": {
+                            "type": "keyword"
+                        },
+                        "computerObject.id": {
+                            "type": "keyword"
+                        },
+                        "computerObject.name": {
+                            "type": "keyword"
+                        },
+                        "event_data": {
+                            "properties": {
+                                "AADDomainJoin": {
+                                    "type": "keyword"
+                                },
+                                "ADDomainJoin": {
+                                    "type": "keyword"
+                                },
+                                "AccessList": {
+                                    "type": "keyword"
+                                },
+                                "AccessMask": {
+                                    "type": "keyword"
+                                },
+                                "AccessReason": {
+                                    "type": "keyword"
+                                },
+                                "AdaptiveTargetState": {
+                                    "type": "keyword"
+                                },
+                                "AdditionalInfo": {
+                                    "type": "keyword"
+                                },
+                                "AdditionalInfo2": {
+                                    "type": "keyword"
+                                },
+                                "Address": {
+                                    "type": "keyword"
+                                },
+                                "AddressLength": {
+                                    "type": "keyword"
+                                },
+                                "AdvancedOptions": {
+                                    "type": "keyword"
+                                },
+                                "AlgorithmName": {
+                                    "type": "keyword"
+                                },
+                                "Application": {
+                                    "type": "keyword"
+                                },
+                                "AuthenticationPackageName": {
+                                    "type": "keyword"
+                                },
+                                "Binary": {
+                                    "type": "keyword"
+                                },
+                                "BitlockerUserInputTime": {
+                                    "type": "keyword"
+                                },
+                                "BootAppStatus": {
+                                    "type": "keyword"
+                                },
+                                "BootId": {
+                                    "type": "keyword"
+                                },
+                                "BootMenuPolicy": {
+                                    "type": "keyword"
+                                },
+                                "BootMode": {
+                                    "type": "keyword"
+                                },
+                                "BootStatusPolicy": {
+                                    "type": "keyword"
+                                },
+                                "BootType": {
+                                    "type": "keyword"
+                                },
+                                "BugcheckCode": {
+                                    "type": "keyword"
+                                },
+                                "BugcheckInfoFromEFI": {
+                                    "type": "keyword"
+                                },
+                                "BugcheckParameter1": {
+                                    "type": "keyword"
+                                },
+                                "BugcheckParameter2": {
+                                    "type": "keyword"
+                                },
+                                "BugcheckParameter3": {
+                                    "type": "keyword"
+                                },
+                                "BugcheckParameter4": {
+                                    "type": "keyword"
+                                },
+                                "BuildVersion": {
+                                    "type": "keyword"
+                                },
+                                "CallerProcessId": {
+                                    "type": "keyword"
+                                },
+                                "CallerProcessName": {
+                                    "type": "keyword"
+                                },
+                                "Checkpoint": {
+                                    "type": "keyword"
+                                },
+                                "CheckpointStatus": {
+                                    "type": "keyword"
+                                },
+                                "ClientCreationTime": {
+                                    "type": "date"
+                                },
+                                "ClientPID": {
+                                    "type": "keyword"
+                                },
+                                "ClientProcessId": {
+                                    "type": "keyword"
+                                },
+                                "ClientProcessStartKey": {
+                                    "type": "keyword"
+                                },
+                                "CmosTime": {
+                                    "type": "date"
+                                },
+                                "CommandLine": {
+                                    "type": "keyword"
+                                },
+                                "Company": {
+                                    "type": "keyword"
+                                },
+                                "Config": {
+                                    "type": "keyword"
+                                },
+                                "ConfigAccessPolicy": {
+                                    "type": "keyword"
+                                },
+                                "ConnectedStandbyInProgress": {
+                                    "type": "keyword"
+                                },
+                                "Contents": {
+                                    "type": "keyword"
+                                },
+                                "CorruptionActionState": {
+                                    "type": "keyword"
+                                },
+                                "CountNew": {
+                                    "type": "keyword"
+                                },
+                                "CountOfCredentialsReturned": {
+                                    "type": "keyword"
+                                },
+                                "CountOld": {
+                                    "type": "keyword"
+                                },
+                                "CreationUtcTime": {
+                                    "type": "keyword"
+                                },
+                                "CsEntryScenarioInstanceId": {
+                                    "type": "keyword"
+                                },
+                                "CsEntryScenarioInstanceIdV2": {
+                                    "type": "keyword"
+                                },
+                                "CurrentBias": {
+                                    "type": "keyword"
+                                },
+                                "CurrentDirectory": {
+                                    "type": "keyword"
+                                },
+                                "CurrentStratumNumber": {
+                                    "type": "keyword"
+                                },
+                                "CurrentTimeZoneID": {
+                                    "type": "keyword"
+                                },
+                                "Default SD String:": {
+                                    "type": "keyword"
+                                },
+                                "Description": {
+                                    "type": "keyword"
+                                },
+                                "DestAddress": {
+                                    "type": "keyword"
+                                },
+                                "DestPort": {
+                                    "type": "keyword"
+                                },
+                                "DestinationHostname": {
+                                    "type": "keyword"
+                                },
+                                "DestinationIp": {
+                                    "type": "keyword"
+                                },
+                                "DestinationIsIpv6": {
+                                    "type": "keyword"
+                                },
+                                "DestinationPort": {
+                                    "type": "keyword"
+                                },
+                                "DestinationPortName": {
+                                    "type": "keyword"
+                                },
+                                "Details": {
+                                    "type": "keyword"
+                                },
+                                "DeviceName": {
+                                    "type": "keyword"
+                                },
+                                "DeviceNameLength": {
+                                    "type": "keyword"
+                                },
+                                "DeviceVersionMajor": {
+                                    "type": "keyword"
+                                },
+                                "DeviceVersionMinor": {
+                                    "type": "keyword"
+                                },
+                                "Direction": {
+                                    "type": "keyword"
+                                },
+                                "DirtyPages": {
+                                    "type": "keyword"
+                                },
+                                "DisableIntegrityChecks": {
+                                    "type": "keyword"
+                                },
+                                "DriveName": {
+                                    "type": "keyword"
+                                },
+                                "DwordVal": {
+                                    "type": "keyword"
+                                },
+                                "EfiDaylightFlags": {
+                                    "type": "keyword"
+                                },
+                                "EfiTime": {
+                                    "type": "date"
+                                },
+                                "EfiTimeZoneBias": {
+                                    "type": "keyword"
+                                },
+                                "ElevatedToken": {
+                                    "type": "keyword"
+                                },
+                                "EnableDisableReason": {
+                                    "type": "keyword"
+                                },
+                                "EnabledNew": {
+                                    "type": "keyword"
+                                },
+                                "EntryCount": {
+                                    "type": "keyword"
+                                },
+                                "ErrorCode": {
+                                    "type": "keyword"
+                                },
+                                "ErrorDescription": {
+                                    "type": "keyword"
+                                },
+                                "EventType": {
+                                    "type": "keyword"
+                                },
+                                "ExecutablePath": {
+                                    "type": "keyword"
+                                },
+                                "ExitReason": {
+                                    "type": "keyword"
+                                },
+                                "ExtraInfo": {
+                                    "type": "keyword"
+                                },
+                                "FQDN": {
+                                    "type": "keyword"
+                                },
+                                "FailureReason": {
+                                    "type": "keyword"
+                                },
+                                "FileVersion": {
+                                    "type": "keyword"
+                                },
+                                "FilterRTID": {
+                                    "type": "keyword"
+                                },
+                                "FinalStatus": {
+                                    "type": "keyword"
+                                },
+                                "FirstRefresh": {
+                                    "type": "keyword"
+                                },
+                                "Flags": {
+                                    "type": "keyword"
+                                },
+                                "FlightSigning": {
+                                    "type": "keyword"
+                                },
+                                "Group": {
+                                    "type": "keyword"
+                                },
+                                "HResult": {
+                                    "type": "keyword"
+                                },
+                                "HandleId": {
+                                    "type": "keyword"
+                                },
+                                "HardwareChecks": {
+                                    "type": "keyword"
+                                },
+                                "Hash": {
+                                    "type": "keyword"
+                                },
+                                "Hashes": {
+                                    "type": "keyword"
+                                },
+                                "HiveName": {
+                                    "type": "keyword"
+                                },
+                                "HiveNameLength": {
+                                    "type": "keyword"
+                                },
+                                "HypervisorDebug": {
+                                    "type": "keyword"
+                                },
+                                "HypervisorLaunchType": {
+                                    "type": "keyword"
+                                },
+                                "HypervisorLoadOptions": {
+                                    "type": "keyword"
+                                },
+                                "ID": {
+                                    "type": "keyword"
+                                },
+                                "Identity": {
+                                    "type": "keyword"
+                                },
+                                "IdleImplementation": {
+                                    "type": "keyword"
+                                },
+                                "IdleStateCount": {
+                                    "type": "keyword"
+                                },
+                                "Image": {
+                                    "type": "keyword"
+                                },
+                                "ImageLoaded": {
+                                    "type": "keyword"
+                                },
+                                "ImpersonationLevel": {
+                                    "type": "keyword"
+                                },
+                                "Initiated": {
+                                    "type": "keyword"
+                                },
+                                "InputSuppressionState": {
+                                    "type": "keyword"
+                                },
+                                "IntegrityLevel": {
+                                    "type": "keyword"
+                                },
+                                "IpAddress": {
+                                    "type": "keyword"
+                                },
+                                "IpPort": {
+                                    "type": "keyword"
+                                },
+                                "IsAutoEnabled": {
+                                    "type": "keyword"
+                                },
+                                "IsTestConfig": {
+                                    "type": "keyword"
+                                },
+                                "IsUnattended": {
+                                    "type": "keyword"
+                                },
+                                "KernelDebug": {
+                                    "type": "keyword"
+                                },
+                                "KeyFilePath": {
+                                    "type": "keyword"
+                                },
+                                "KeyLength": {
+                                    "type": "keyword"
+                                },
+                                "KeyName": {
+                                    "type": "keyword"
+                                },
+                                "KeyType": {
+                                    "type": "keyword"
+                                },
+                                "KeysUpdated": {
+                                    "type": "keyword"
+                                },
+                                "LastBootGood": {
+                                    "type": "keyword"
+                                },
+                                "LastBootId": {
+                                    "type": "keyword"
+                                },
+                                "LastShutdownGood": {
+                                    "type": "keyword"
+                                },
+                                "LayerName": {
+                                    "type": "keyword"
+                                },
+                                "LayerRTID": {
+                                    "type": "keyword"
+                                },
+                                "LidReliability": {
+                                    "type": "keyword"
+                                },
+                                "LidState": {
+                                    "type": "keyword"
+                                },
+                                "LmPackageName": {
+                                    "type": "keyword"
+                                },
+                                "LoadOptions": {
+                                    "type": "keyword"
+                                },
+                                "LogonGuid": {
+                                    "type": "keyword"
+                                },
+                                "LogonId": {
+                                    "type": "keyword"
+                                },
+                                "LogonProcessName": {
+                                    "type": "keyword"
+                                },
+                                "LogonType": {
+                                    "type": "keyword"
+                                },
+                                "LongPowerButtonPressDetected": {
+                                    "type": "keyword"
+                                },
+                                "MajorVersion": {
+                                    "type": "keyword"
+                                },
+                                "MandatoryLabel": {
+                                    "type": "keyword"
+                                },
+                                "MaximumPerformancePercent": {
+                                    "type": "keyword"
+                                },
+                                "MessageNumber": {
+                                    "type": "keyword"
+                                },
+                                "MessageTotal": {
+                                    "type": "keyword"
+                                },
+                                "MinimumPasswordLength": {
+                                    "type": "keyword"
+                                },
+                                "MinimumPasswordLengthAudit": {
+                                    "type": "keyword"
+                                },
+                                "MinimumPerformancePercent": {
+                                    "type": "keyword"
+                                },
+                                "MinimumThrottlePercent": {
+                                    "type": "keyword"
+                                },
+                                "MinorVersion": {
+                                    "type": "keyword"
+                                },
+                                "MonitorReason": {
+                                    "type": "keyword"
+                                },
+                                "NewProcessId": {
+                                    "type": "keyword"
+                                },
+                                "NewProcessName": {
+                                    "type": "keyword"
+                                },
+                                "NewSize": {
+                                    "type": "keyword"
+                                },
+                                "NewTime": {
+                                    "type": "date"
+                                },
+                                "NewValue": {
+                                    "type": "keyword"
+                                },
+                                "NewValueType": {
+                                    "type": "keyword"
+                                },
+                                "NextSessionId": {
+                                    "type": "keyword"
+                                },
+                                "NextSessionType": {
+                                    "type": "keyword"
+                                },
+                                "NominalFrequency": {
+                                    "type": "keyword"
+                                },
+                                "Number": {
+                                    "type": "keyword"
+                                },
+                                "ObjectName": {
+                                    "type": "keyword"
+                                },
+                                "ObjectServer": {
+                                    "type": "keyword"
+                                },
+                                "ObjectType": {
+                                    "type": "keyword"
+                                },
+                                "ObjectValueName": {
+                                    "type": "keyword"
+                                },
+                                "OldTime": {
+                                    "type": "date"
+                                },
+                                "OldValue": {
+                                    "type": "keyword"
+                                },
+                                "OldValueType": {
+                                    "type": "keyword"
+                                },
+                                "Operation": {
+                                    "type": "keyword"
+                                },
+                                "OperationType": {
+                                    "type": "keyword"
+                                },
+                                "OriginalFileName": {
+                                    "type": "keyword"
+                                },
+                                "OriginalSize": {
+                                    "type": "keyword"
+                                },
+                                "PackageName": {
+                                    "type": "keyword"
+                                },
+                                "ParentCommandLine": {
+                                    "type": "keyword"
+                                },
+                                "ParentImage": {
+                                    "type": "keyword"
+                                },
+                                "ParentProcessGuid": {
+                                    "type": "keyword"
+                                },
+                                "ParentProcessId": {
+                                    "type": "keyword"
+                                },
+                                "ParentProcessName": {
+                                    "type": "keyword"
+                                },
+                                "ParentUser": {
+                                    "type": "keyword"
+                                },
+                                "Path": {
+                                    "type": "keyword"
+                                },
+                                "PerformanceImplementation": {
+                                    "type": "keyword"
+                                },
+                                "PowerButtonSuppressionState": {
+                                    "type": "keyword"
+                                },
+                                "PowerButtonTimestamp": {
+                                    "type": "keyword"
+                                },
+                                "PowerStateAc": {
+                                    "type": "keyword"
+                                },
+                                "PreviousCreationUtcTime": {
+                                    "type": "keyword"
+                                },
+                                "PreviousEnergyCapacityAtEnd": {
+                                    "type": "keyword"
+                                },
+                                "PreviousEnergyCapacityAtStart": {
+                                    "type": "keyword"
+                                },
+                                "PreviousFullEnergyCapacityAtEnd": {
+                                    "type": "keyword"
+                                },
+                                "PreviousFullEnergyCapacityAtStart": {
+                                    "type": "keyword"
+                                },
+                                "PreviousSessionDurationInUs": {
+                                    "type": "keyword"
+                                },
+                                "PreviousSessionId": {
+                                    "type": "keyword"
+                                },
+                                "PreviousSessionType": {
+                                    "type": "keyword"
+                                },
+                                "PreviousTime": {
+                                    "type": "date"
+                                },
+                                "PrivilegeList": {
+                                    "type": "keyword"
+                                },
+                                "ProcessCreationTime": {
+                                    "type": "date"
+                                },
+                                "ProcessGuid": {
+                                    "type": "keyword"
+                                },
+                                "ProcessID": {
+                                    "type": "keyword"
+                                },
+                                "ProcessId": {
+                                    "type": "keyword"
+                                },
+                                "ProcessName": {
+                                    "type": "keyword"
+                                },
+                                "ProcessingMode": {
+                                    "type": "keyword"
+                                },
+                                "ProcessingTimeInMilliseconds": {
+                                    "type": "keyword"
+                                },
+                                "Product": {
+                                    "type": "keyword"
+                                },
+                                "Properties": {
+                                    "type": "keyword"
+                                },
+                                "Protocol": {
+                                    "type": "keyword"
+                                },
+                                "ProviderName": {
+                                    "type": "keyword"
+                                },
+                                "PuaCount": {
+                                    "type": "keyword"
+                                },
+                                "PuaPolicyId": {
+                                    "type": "keyword"
+                                },
+                                "QfeVersion": {
+                                    "type": "keyword"
+                                },
+                                "QueryName": {
+                                    "type": "keyword"
+                                },
+                                "QueryResults": {
+                                    "type": "keyword"
+                                },
+                                "QueryStatus": {
+                                    "type": "keyword"
+                                },
+                                "ReadOperation": {
+                                    "type": "keyword"
+                                },
+                                "RealTimeIsUniversal": {
+                                    "type": "keyword"
+                                },
+                                "Reason": {
+                                    "type": "keyword"
+                                },
+                                "RelativeTargetName": {
+                                    "type": "keyword"
+                                },
+                                "RelaxMinimumPasswordLengthLimits": {
+                                    "type": "keyword"
+                                },
+                                "RemoteCredentialGuard": {
+                                    "type": "keyword"
+                                },
+                                "RemoteEventLogging": {
+                                    "type": "keyword"
+                                },
+                                "RemoteMachineID": {
+                                    "type": "keyword"
+                                },
+                                "RemoteUserID": {
+                                    "type": "keyword"
+                                },
+                                "ReserveStatus": {
+                                    "type": "keyword"
+                                },
+                                "Resource": {
+                                    "type": "keyword"
+                                },
+                                "ResourceAttributes": {
+                                    "type": "keyword"
+                                },
+                                "RestrictedAdminMode": {
+                                    "type": "keyword"
+                                },
+                                "ReturnCode": {
+                                    "type": "keyword"
+                                },
+                                "RpcCallClientLocality": {
+                                    "type": "keyword"
+                                },
+                                "RuleName": {
+                                    "type": "keyword"
+                                },
+                                "RunspaceId": {
+                                    "type": "keyword"
+                                },
+                                "Schema": {
+                                    "type": "keyword"
+                                },
+                                "SchemaFriendlyName": {
+                                    "type": "keyword"
+                                },
+                                "SchemaVersion": {
+                                    "type": "keyword"
+                                },
+                                "ScriptBlockId": {
+                                    "type": "keyword"
+                                },
+                                "ScriptBlockText": {
+                                    "type": "keyword"
+                                },
+                                "Service": {
+                                    "type": "keyword"
+                                },
+                                "ServiceVersion": {
+                                    "type": "keyword"
+                                },
+                                "ShareLocalPath": {
+                                    "type": "keyword"
+                                },
+                                "ShareName": {
+                                    "type": "keyword"
+                                },
+                                "ShutdownActionType": {
+                                    "type": "keyword"
+                                },
+                                "ShutdownEventCode": {
+                                    "type": "keyword"
+                                },
+                                "ShutdownReason": {
+                                    "type": "keyword"
+                                },
+                                "Signature": {
+                                    "type": "keyword"
+                                },
+                                "SignatureStatus": {
+                                    "type": "keyword"
+                                },
+                                "Signed": {
+                                    "type": "keyword"
+                                },
+                                "SleepInProgress": {
+                                    "type": "keyword"
+                                },
+                                "SourceAddress": {
+                                    "type": "keyword"
+                                },
+                                "SourceHostname": {
+                                    "type": "keyword"
+                                },
+                                "SourceIp": {
+                                    "type": "keyword"
+                                },
+                                "SourceIsIpv6": {
+                                    "type": "keyword"
+                                },
+                                "SourcePort": {
+                                    "type": "keyword"
+                                },
+                                "SourcePortName": {
+                                    "type": "keyword"
+                                },
+                                "StartTime": {
+                                    "type": "date"
+                                },
+                                "State": {
+                                    "type": "keyword"
+                                },
+                                "Status": {
+                                    "type": "keyword"
+                                },
+                                "StopTime": {
+                                    "type": "date"
+                                },
+                                "SubStatus": {
+                                    "type": "keyword"
+                                },
+                                "SubjectDomainName": {
+                                    "type": "keyword"
+                                },
+                                "SubjectLogonId": {
+                                    "type": "keyword"
+                                },
+                                "SubjectUserName": {
+                                    "type": "keyword"
+                                },
+                                "SubjectUserSid": {
+                                    "type": "keyword"
+                                },
+                                "SupportInfo1": {
+                                    "type": "keyword"
+                                },
+                                "SupportInfo2": {
+                                    "type": "keyword"
+                                },
+                                "SystemInCmosMode": {
+                                    "type": "keyword"
+                                },
+                                "SystemSleepTransitionsToOn": {
+                                    "type": "keyword"
+                                },
+                                "TSId": {
+                                    "type": "keyword"
+                                },
+                                "TargetDomainName": {
+                                    "type": "keyword"
+                                },
+                                "TargetFilename": {
+                                    "type": "keyword"
+                                },
+                                "TargetInfo": {
+                                    "type": "keyword"
+                                },
+                                "TargetLinkedLogonId": {
+                                    "type": "keyword"
+                                },
+                                "TargetLogonGuid": {
+                                    "type": "keyword"
+                                },
+                                "TargetLogonId": {
+                                    "type": "keyword"
+                                },
+                                "TargetName": {
+                                    "type": "keyword"
+                                },
+                                "TargetObject": {
+                                    "type": "keyword"
+                                },
+                                "TargetOutboundDomainName": {
+                                    "type": "keyword"
+                                },
+                                "TargetOutboundUserName": {
+                                    "type": "keyword"
+                                },
+                                "TargetProcessId": {
+                                    "type": "keyword"
+                                },
+                                "TargetProcessName": {
+                                    "type": "keyword"
+                                },
+                                "TargetServerName": {
+                                    "type": "keyword"
+                                },
+                                "TargetSid": {
+                                    "type": "keyword"
+                                },
+                                "TargetUserName": {
+                                    "type": "keyword"
+                                },
+                                "TargetUserSid": {
+                                    "type": "keyword"
+                                },
+                                "TaskContent": {
+                                    "type": "keyword"
+                                },
+                                "TaskContentNew": {
+                                    "type": "keyword"
+                                },
+                                "TaskName": {
+                                    "type": "keyword"
+                                },
+                                "TerminalSessionId": {
+                                    "type": "keyword"
+                                },
+                                "TestSigning": {
+                                    "type": "keyword"
+                                },
+                                "TimeDeltaInMs": {
+                                    "type": "keyword"
+                                },
+                                "TimeSource": {
+                                    "type": "keyword"
+                                },
+                                "TimeSourceRefId": {
+                                    "type": "keyword"
+                                },
+                                "TimeZoneBias": {
+                                    "type": "keyword"
+                                },
+                                "TimeZoneInfoCacheUpdated": {
+                                    "type": "keyword"
+                                },
+                                "TokenElevationType": {
+                                    "type": "keyword"
+                                },
+                                "TransactionId": {
+                                    "type": "keyword"
+                                },
+                                "TransmittedServices": {
+                                    "type": "keyword"
+                                },
+                                "Type": {
+                                    "type": "keyword"
+                                },
+                                "UpdateReason": {
+                                    "type": "keyword"
+                                },
+                                "Url": {
+                                    "type": "keyword"
+                                },
+                                "UrlGroupId": {
+                                    "type": "keyword"
+                                },
+                                "User": {
+                                    "type": "keyword"
+                                },
+                                "UserSid": {
+                                    "type": "keyword"
+                                },
+                                "UtcTime": {
+                                    "type": "keyword"
+                                },
+                                "Version": {
+                                    "type": "keyword"
+                                },
+                                "VirtualAccount": {
+                                    "type": "keyword"
+                                },
+                                "VsmLaunchType": {
+                                    "type": "keyword"
+                                },
+                                "VsmPolicy": {
+                                    "type": "keyword"
+                                },
+                                "Workstation": {
+                                    "type": "keyword"
+                                },
+                                "WorkstationName": {
+                                    "type": "keyword"
+                                },
+                                "param1": {
+                                    "type": "keyword"
+                                },
+                                "param10": {
+                                    "type": "keyword"
+                                },
+                                "param11": {
+                                    "type": "keyword"
+                                },
+                                "param2": {
+                                    "type": "keyword"
+                                },
+                                "param3": {
+                                    "type": "keyword"
+                                },
+                                "param4": {
+                                    "type": "keyword"
+                                },
+                                "param5": {
+                                    "type": "keyword"
+                                },
+                                "param6": {
+                                    "type": "keyword"
+                                },
+                                "param7": {
+                                    "type": "keyword"
+                                },
+                                "param8": {
+                                    "type": "keyword"
+                                },
+                                "param9": {
+                                    "type": "keyword"
+                                }
+                            }
+                        },
+                        "event_id": {
+                            "type": "keyword"
+                        },
+                        "keywords": {
+                            "type": "keyword"
+                        },
+                        "channel": {
+                            "type": "keyword"
+                        },
+                        "record_id": {
+                            "type": "keyword"
+                        },
+                        "related_activity_id": {
+                            "type": "keyword"
+                        },
+                        "opcode": {
+                            "type": "keyword"
+                        },
+                        "provider_guid": {
+                            "type": "keyword"
+                        },
+                        "process.pid": {
+                            "type": "long"
+                        },
+                        "provider_name": {
+                            "type": "keyword"
+                        },
+                        "task": {
+                            "type": "keyword"
+                        },
+                        "time_created": {
+                            "type": "date"
+                        },
+                        "trustAttribute": {
+                            "type": "keyword"
+                        },
+                        "trustDirection": {
+                            "type": "keyword"
+                        },
+                        "trustType": {
+                            "type": "keyword"
+                        },
+                        "process.thread.id": {
+                            "type": "long"
+                        },
+                        "user.identifier": {
+                            "type": "keyword"
+                        },
+                        "user.name": {
+                            "type": "keyword"
+                        },
+                        "user.domain": {
+                            "type": "keyword"
+                        },
+                        "user.type": {
+                            "type": "keyword"
+                        },
+                        "version": {
+                            "type": "long"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,25 @@
+{
+    "version": 1,
+    "priority": 2,
+    "template": {
+        "aliases": {
+            "zeek": {}
+        },
+        "lifecycle": {
+            "enabled": true,
+            "data_retention": "7d"
+        }
+    },
+    "index_patterns": [
+        "zeek-*"
+    ],
+    "data_stream": {
+        "hidden": false,
+        "allow_custom_routing": false
+    },
+    "composed_of" : [
+        "replication_template",
+        "beats_template",
+        "corelight-ecs-component-protocol_log-mappings_template"
+    ]
+}

@@ -1,0 +1,90 @@
+{
+    "_meta": {
+        "description": "Beats Template"
+    },
+    "version": 1,
+    "template": {
+          "mappings": {
+            "properties": {
+              "host_bkp.os.type": {
+                "type": "keyword"
+              },
+              "event.category": {
+                "type": "keyword"
+              },
+              "type": {
+                "type": "keyword"
+              },
+              "host_bkp.id": {
+                "type": "keyword"
+              },
+              "service.type": {
+                "type": "keyword"
+              },
+              "agent.type": {
+                "type": "keyword"
+              },
+              "host_bkp.os.name": {
+                "type": "keyword"
+              },
+              "event.module": {
+                "type": "keyword"
+              },
+              "host_bkp.os.platform": {
+                "type": "keyword"
+              },
+              "event.kind": {
+                "type": "keyword"
+              },
+              "host_bkp.containerized": {
+                "type": "boolean"
+              },
+              "fileset.name": {
+                "type": "keyword"
+              },
+              "input.type": {
+                "type": "keyword"
+              },
+              "host_bkp.os.kernel": {
+                "type": "keyword"
+              },
+              "host_bkp.ip": {
+                "type": "ip"
+              },
+              "host_bkp.os.family": {
+                "type": "keyword"
+              },
+              "host_bkp.os.codename": {
+                "type": "keyword"
+              },
+              "agent.id": {
+                "type": "keyword"
+              },
+              "ecs.version": {
+                "type": "keyword"
+              },
+              "host_bkp.architecture": {
+                "type": "keyword"
+              },
+              "agent.ephemeral_id": {
+                "type": "keyword"
+              },
+              "agent.version": {
+                "type": "keyword"
+              },
+              "event.id": {
+                "type": "keyword"
+              },
+              "dataset": {
+                "type": "keyword"
+              },
+              "event.dataset": {
+                "type": "keyword"
+              },
+              "recieved_timestamp": {
+                "type": "date"
+              }
+            }
+          }
+    }
+}

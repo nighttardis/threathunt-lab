@@ -1,0 +1,32 @@
+- name: Set Elastic Component Templates
+  ansible.builtin.uri:
+    url: https://127.0.0.1:9200/_component_template/{{ item.split('.') | first }}_template
+    ca_path: '/opt/elasticsearch/config/certs/ca/ca.crt'
+    return_content: true
+    user: "elastic"
+    password: "{{ lookup('community.hashi_vault.vault_kv2_get', 'elastic', engine_mount_point='secrets')['secret']['elasticsearch'] }}"
+    method: PUT
+    body_format: "json"
+    body: "{{ lookup('file', 'templates/component/{{ item }}') }}"
+  loop:
+    - corelight-ecs-component-protocol_log-mappings.json
+    - winlogbeat.json
+    - beats.json
+    - replication.json
+
+- name: Set Elastic Index Templates
+  ansible.builtin.uri:
+    url: https://127.0.0.1:9200/_index_template/{{ item.split('.') | first }}_template
+    ca_path: '/opt/elasticsearch/config/certs/ca/ca.crt'
+    return_content: true
+    user: "elastic"
+    password: "{{ lookup('community.hashi_vault.vault_kv2_get', 'elastic', engine_mount_point='secrets')['secret']['elasticsearch'] }}"
+    method: PUT
+    body_format: "json"
+    body: "{{ lookup('file', 'templates/index/{{ item }}') }}"
+  loop:
+    - zeek.json
+    - zeek-dns.json
+    - zeek-http.json
+    - windows.json
+

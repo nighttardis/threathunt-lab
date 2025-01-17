@@ -2,8 +2,14 @@
 
 - name: Install ElasticSearch (Docker)
   ansible.builtin.include_tasks: install-linux-elasticsearch-docker.yml
-  when: elastic_docker == '1'  and ('elastic_role' in group_names or 'elastic_oss_role' in group_names) and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  when: elastic_docker == '1'  and ('elastic_role' in group_names or 'elastic_oss_role' in group_names) and
+    (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
 
 - name: Install Kibana (Docker)
   ansible.builtin.include_tasks: install-linux-kibana-docker.yml
-  when: kibana_docker == '1' and ('elastic_role' in group_names or 'elastic_oss_role' in group_names) and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  when: kibana_docker == '1' and ('elastic_role' in group_names or 'elastic_oss_role' in group_names) and
+    (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+
+- name: Configure Elastic Indexes
+  ansible.builtin.include_tasks: configure-elastic-index.yml
+  when: ('elastic_role' in group_names or 'elastic_oss_role' in group_names)

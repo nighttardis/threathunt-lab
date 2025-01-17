@@ -1,0 +1,25 @@
+{
+    "version": 1,
+    "priority": 2,
+    "template": {
+        "aliases": {
+            "test-windows": {}
+        },
+        "lifecycle": {
+            "enabled": true,
+            "data_retention": "7d"
+        }
+    },
+    "index_patterns": [
+        "winlogbeat-*"
+    ],
+    "data_stream": {
+        "hidden": false,
+        "allow_custom_routing": false
+    },
+    "composed_of" : [
+        "replication_template",
+        "beats_template",
+        "winlogbeat_template"
+    ]
+}
