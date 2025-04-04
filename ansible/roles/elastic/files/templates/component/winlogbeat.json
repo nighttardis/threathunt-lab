@@ -2,16 +2,11 @@
     "_meta": {
         "description": "Winlog Beat Template"
     },
-    "version": 1,
+    "version": 2,
     "template": {
         "settings": {},
         "mappings": {
-            "dynamic_templates": [{
-                "strings": {
-                    "match_mapping_type": "string",
-                    "runtime": {}
-                }
-            }],
+            "dynamic_templates": [],
             "properties": {
                 "winlog": {
                     "properties": {
@@ -366,7 +361,12 @@
                                     "type": "keyword"
                                 },
                                 "Image": {
-                                    "type": "keyword"
+                                    "type": "text",
+                                    "fields": {
+                                        "keyword": {
+                                            "type": "keyword"
+                                        }
+                                    }
                                 },
                                 "ImageLoaded": {
                                     "type": "keyword"

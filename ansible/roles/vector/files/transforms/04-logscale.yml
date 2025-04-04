@@ -6,3 +6,5 @@ source: >-
   del(.host_bkp)
 
   del(.agent)
+
+  .dataset = replace!(.dataset, r'\s', "-")

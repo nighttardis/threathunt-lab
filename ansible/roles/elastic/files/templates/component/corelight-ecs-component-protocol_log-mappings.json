@@ -484,9 +484,15 @@
           },
           "client": {
             "properties": {
-              "address": {
-                "path": "source.address",
-                "type": "alias"
+              "address":{
+                "fields": {
+                  "security": {
+                    "analyzer": "es_stk_analyzer",
+                    "type": "text"
+                  }
+                },
+                "ignore_above": 2048,
+                "type": "keyword"
               },
               "as": {
                 "properties": {
@@ -2676,7 +2682,7 @@
               },
               "payload": {
                 "fields": {
-                  "security": {
+                  "security": { 
                     "analyzer": "es_stk_analyzer",
                     "type": "text"
                   }
@@ -2690,63 +2696,12 @@
             }
           },
           "host": {
-            "properties": {
-              "architecture": {
-                "ignore_above": 4096,
-                "type": "keyword"
-              },
-              "host": {
-                "type": "keyword"
-              },
-              "hostname": {
-                "type": "keyword"
-              },
-              "ip": {
-                "type": "ip"
-              },
-              "ip_public": {
-                "type": "boolean"
-              },
-              "ip_rfc": {
-                "type": "keyword"
-              },
-              "ip_type": {
-                "type": "keyword"
-              },
-              "ip_valid_count": {
-                "type": "integer"
-              },
-              "ip_version": {
-                "type": "keyword"
-              },
-              "is_ipv6": {
-                "type": "boolean"
-              },
-              "level_1n2_ip": {
-                "ignore_above": 1024,
-                "norms": false,
-                "type": "keyword"
-              },
-              "mac": {
-                "ignore_above": 4096,
-                "type": "keyword"
-              },
-              "mac_oui_vendor_name": {
-                "fields": {
-                  "security": {
-                    "analyzer": "es_stk_analyzer",
-                    "type": "text"
-                  }
-                },
-                "ignore_above": 9192,
-                "type": "keyword"
-              },
-              "port": {
-                "type": "long"
-              },
-              "type": {
-                "ignore_above": 4096,
-                "type": "keyword"
+            "ignore_above": 32000,
+            "type": "keyword",
+            "fields": {
+              "security": {
+                "analyzer": "es_stk_analyzer",
+                "type": "text"
               }
             }
           },
@@ -4065,9 +4020,15 @@
           },
           "server": {
             "properties": {
-              "address": {
-                "path": "destination.address",
-                "type": "alias"
+              "address":{
+                "fields": {
+                  "security": {
+                    "analyzer": "es_stk_analyzer",
+                    "type": "text"
+                  }
+                },
+                "ignore_above": 2048,
+                "type": "keyword"
               },
               "as": {
                 "properties": {

@@ -1,9 +1,10 @@
 {
-    "version": 1,
+    "version": 2,
     "priority": 2,
     "template": {
         "aliases": {
-            "test-windows": {}
+            "test-windows": {},
+            "windows": {}
         },
         "lifecycle": {
             "enabled": true,
