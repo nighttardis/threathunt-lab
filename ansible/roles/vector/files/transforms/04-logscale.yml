@@ -1,0 +1,8 @@
+type: "remap"
+inputs: 
+  - 02-router.dhcp
+  - 02-router.http
+source: >-
+  del(.host_bkp)
+
+  del(.agent)

@@ -1,0 +1,7 @@
+type: route
+inputs:
+  - 01-logstash_base
+route:
+  winlog: .agent.type == "winlogbeat"
+  dhcp: .fileset.name == "dhcp"
+  http: .fileset.name == "http"

@@ -1,0 +1,19 @@
+type: elasticsearch
+inputs: 
+    - 02-router._unmatched
+    - 03-winlogbeat
+    - 02-router.dhcp
+    - 02-router.http
+endpoints: 
+    - https://localhost:9200
+auth:
+    strategy: "basic"
+    user: l
+    password: "{{ lookup('community.hashi_vault.vault_kv2_get', 'elastic', engine_mount_point='secrets')['secret']['logstash'] }}"
+tls:
+    ca_file: /opt/elasticsearch/config/certs/ca/ca.crt
+    verify_hostname: false
+mode: data_stream
+data_stream:
+    type: "{{ '{{' }} .type }}"
+    dataset: "{{ '{{' }} .dataset }}"

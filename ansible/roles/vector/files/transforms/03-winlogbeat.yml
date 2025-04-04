@@ -1,0 +1,9 @@
+type: "remap"
+inputs: 
+  - 02-router.winlog
+source: >-
+  .source = .winlog.provider_name
+
+  .type = downcase!(.agent.type)
+
+  .dataset = downcase!(.event.provider)

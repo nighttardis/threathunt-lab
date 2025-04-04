@@ -1,0 +1,15 @@
+type: "remap"
+inputs: 
+  - "01-logstash"
+source: >-
+  .host_bkp = .host
+
+  .host = .host_bkp.hostname
+
+  .recieved_timestamp = now()
+
+  del(.@metadata)
+
+  .type = .event.module
+
+  .dataset = .fileset.name

@@ -1,0 +1,9 @@
+type: humio_logs
+inputs:
+    - 04-logscale
+endpoint: "{{ logstash_host_2 }}"
+token: "{{ lookup('community.hashi_vault.vault_kv2_get', 'logscale', engine_mount_point='secrets')['secret']['password'] }}"
+index: "{{ lookup('community.hashi_vault.vault_kv2_get', 'logscale', engine_mount_point='secrets')['secret']['repo'] }}"
+event_type: json
+encoding: 
+    codec: json

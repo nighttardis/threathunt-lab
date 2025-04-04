@@ -1,0 +1,4 @@
+type: "console"
+inputs: ["01-logstash_base"]
+encoding:
+  codec: "json"

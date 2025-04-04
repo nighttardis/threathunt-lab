@@ -1,0 +1,11 @@
+---
+
+- name: Install Vector
+  ansible.builtin.include_tasks: install-vector.yml
+  when: ('logstash_role' in group_names or 'logstash_oss_role' in group_names) and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+# - name: Configure Logstash User and ILM for Elasticsearch
+#   ansible.builtin.include_tasks: config-linux-logstash-elastic.yml
+#   when: "'elastic_siem_role' in group_names"
+- name: Configure Vector
+  ansible.builtin.include_tasks: config-vector.yml
+  when: ('logstash_role' in group_names or 'logstash_oss_role' in group_names) and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')

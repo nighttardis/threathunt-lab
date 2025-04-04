@@ -1,0 +1,2 @@
+type: logstash
+address: 0.0.0.0:5044

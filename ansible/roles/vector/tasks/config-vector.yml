@@ -1,0 +1,50 @@
+---
+
+- name: Deploy Sinks
+  become: true
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "/etc/vector/{{ item }}"
+    owner: root
+    group: vector
+    mode: '0640'
+  with_items:
+    - sources/01-logstash.yml
+  notify: Restart Vector
+
+- name: Deploy Transforms
+  become: true
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "/etc/vector/{{ item }}"
+    owner: root
+    group: vector
+    mode: '0640'
+  with_items:
+    - transforms/01-logstash_base.yml
+    - transforms/02-router.yml
+    - transforms/03-winlogbeat.yml
+    - transforms/04-logscale.yml
+  notify: Restart Vector
+
+# - name: Deploy Sinks
+#   become: true
+#   ansible.builtin.copy:
+#     src: "{{ item }}"
+#     dest: "/etc/vector/{{ item }}"
+#     mode: '0640'
+#   with_items:
+#     - sinks/01-stdout.yml
+
+- name: Deploy Sinks (Templates)
+  become: true
+  ansible.builtin.template:
+    src: "{{ item }}"
+    dest: "/etc/vector/sinks/{{ item[:-3] }}"
+    owner: root
+    group: vector
+    mode: '0640'
+  with_items: 
+    - 01-elastic-sink.yml.j2
+    - 02-logscale-sink.yml.j2
+  notify: Restart Vector

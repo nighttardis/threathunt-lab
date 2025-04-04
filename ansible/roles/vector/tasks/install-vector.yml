@@ -1,0 +1,38 @@
+---
+
+- name: Datadog Repo Cert (Debian Based)
+  become: true
+  ansible.builtin.apt_key:
+    url: https://keys.datadoghq.com/DATADOG_APT_KEY_CURRENT.public
+    state: present
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+
+- name: Setup Vector Repo (Debian Based)
+  become: true
+  ansible.builtin.apt_repository:
+    repo: deb https://apt.vector.dev stable vector-0
+    state: present
+    filename: vector
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+
+- name: Install Vector (Debian Based)
+  become: true
+  ansible.builtin.apt:
+    name: vector
+    update_cache: true
+    state: present
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  register: install_vector
+
+- name: Clean up /etc/vector
+  become: true
+  ansible.builtin.file:
+    state: "{{ item }}"
+    path: "/etc/vector"
+    owner: root
+    group: root
+    mode: '0755'
+  with_items:
+    - absent
+    - directory
+  when: install_vector.changed
